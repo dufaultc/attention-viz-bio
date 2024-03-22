@@ -476,7 +476,7 @@ def draw_arrow_only(image, attentions, patch_size, thickness=1, color=[245, 230,
 
 # dataservice object
 
-
+import random
 class DataService(object):
     def __init__(self):
         print('------inited------')
@@ -486,6 +486,10 @@ class DataService(object):
         self.attention_data_bert = read_attention_data("bert")
         self.agg_att_data_bert = read_agg_attn_data("bert")
         self.token_data_bert = read_token_data("bert")
+        #for i in range(len(self.token_data_bert["tokens"])):
+        #    self.token_data_bert["tokens"][i]["value"] = ''.join(random.choice(["A", "C", "T", "G"]) for _ in range(4))
+        #    self.token_data_bert["tokens"][i]["sentence"] = ' '.join(random.choice(["A", "C", "T", "G"]) for _ in range(len(self.token_data_bert["tokens"][i]["sentence"].split())))
+
 
         # gpt
         self.matrix_data_gpt = read_matrix_data("gpt")
