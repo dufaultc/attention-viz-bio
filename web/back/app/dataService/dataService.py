@@ -476,7 +476,6 @@ def draw_arrow_only(image, attentions, patch_size, thickness=1, color=[245, 230,
 
 # dataservice object
 
-import random
 class DataService(object):
     def __init__(self):
         print('------inited------')
@@ -486,10 +485,6 @@ class DataService(object):
         self.attention_data_bert = read_attention_data("bert")
         self.agg_att_data_bert = read_agg_attn_data("bert")
         self.token_data_bert = read_token_data("bert")
-        #for i in range(len(self.token_data_bert["tokens"])):
-        #    self.token_data_bert["tokens"][i]["value"] = ''.join(random.choice(["A", "C", "T", "G"]) for _ in range(4))
-        #    self.token_data_bert["tokens"][i]["sentence"] = ' '.join(random.choice(["A", "C", "T", "G"]) for _ in range(len(self.token_data_bert["tokens"][i]["sentence"].split())))
-
 
         # gpt
         self.matrix_data_gpt = read_matrix_data("gpt")
@@ -497,45 +492,16 @@ class DataService(object):
         self.agg_att_data_gpt = read_agg_attn_data("gpt")
         self.token_data_gpt = read_token_data("gpt")
 
-        # VIT-32 (natural)
-        self.matrix_data_vit_32 = read_matrix_data("vit_32")
-        self.attention_data_vit_32 = read_attention_data("vit_32")
-        self.token_data_vit_32 = read_token_data("vit_32")
-
-        # VIT-32 (synthetic)
-        if folder_exists("vit_syn"):
-            self.matrix_data_vit_syn = read_matrix_data("vit_syn")
-            self.attention_data_vit_syn = read_attention_data("vit_syn")
-            self.token_data_vit_syn = read_token_data("vit_syn")
-
-        # VIT-16
-        if folder_exists("vit_16"):
-            self.matrix_data_vit_16 = read_matrix_data("vit_16")
-            self.attention_data_vit_16 = read_attention_data("vit_16")
-            self.token_data_vit_16 = read_token_data("vit_16")
-
         return None
 
     def get_matrix_data(self, model):
         if model == "bert":
             return self.matrix_data_bert
-        elif model == "vit-16":
-            return self.matrix_data_vit_16
-        elif model in ["vit-32", "vit-nat"]:
-            return self.matrix_data_vit_32
-        elif model == "vit-syn":
-            return self.matrix_data_vit_syn
         return self.matrix_data_gpt
 
     def get_token_data(self, model):
         if model == "bert":
             return self.token_data_bert
-        elif model == "vit-16":
-            return self.token_data_vit_16
-        elif model in ["vit-32", "vit-nat"]:
-            return self.token_data_vit_32
-        elif model == "vit-syn":
-            return self.token_data_vit_syn
         return self.token_data_gpt
 
     def get_attention_by_token(self, token, model):
@@ -547,76 +513,22 @@ class DataService(object):
         if model == "bert":
             all_token_info = self.token_data_bert['tokens'][index]
             offset = len(self.token_data_bert['tokens']) / 2
-        elif model in ["vit-32", "vit-nat"]:
-            all_token_info = copy.copy(self.token_data_vit_32['tokens'][index])
-        elif model == "vit-syn":
-            all_token_info = copy.copy(
-                self.token_data_vit_syn['tokens'][index])
-        elif model == "vit-16":
-            all_token_info = copy.copy(self.token_data_vit_16['tokens'][index])
         else:
             all_token_info = self.token_data_gpt['tokens'][index]
             offset = len(self.token_data_gpt['tokens']) / 2
 
-        if model in ["vit-32", "vit-nat", "vit-syn"]:
-            start = index - \
-                (all_token_info['position_row'] * 7 +
-                 all_token_info['position_col'] + 1)
-            end = start + 50
-
-            token_data = self.token_data_vit_32 if model in [
-                "vit-32", "vit-nat"] else self.token_data_vit_syn
-            image = read_image_from_dataurl64(
-                token_data['tokens'][start]['originalImagePath']).copy()
-            if token_data['tokens'][index]['type'] == "key":
-                color = [227, 55, 143]
-                start -= 50
-                end -= 50
-            else:
-                color = [71, 222, 93]
-            highlighted_image = highlight_a_patch(image.copy(), all_token_info['position_row'], all_token_info['position_col'],
-                                                  32, width=3, c=color)
-
-            all_token_info['originalImagePath'] = convert_np_image_to_dataurl64(
-                highlighted_image)
-        elif model == "vit-16":
-            start = index - \
-                (all_token_info['position_row'] * 14 +
-                 all_token_info['position_col'] + 1)
-            end = start + 197
-
-            image = read_image_from_dataurl64(
-                self.token_data_vit_16['tokens'][start]['originalImagePath']).copy()
-            if self.token_data_vit_16['tokens'][index]['type'] == "key":
-                color = [227, 55, 143]
-                start -= 197
-                end -= 197
-            else:
-                color = [71, 222, 93]
-            highlighted_image = highlight_a_patch(image.copy(), all_token_info['position_row'], all_token_info['position_col'],
-                                                  16, width=2, c=color)
-
-            all_token_info['originalImagePath'] = convert_np_image_to_dataurl64(
-                highlighted_image)
-        else:
-            # find start/end position for sentence
-            start = index - all_token_info['pos_int']
-            if all_token_info['type'] == "key":  # pass same attn info for key
-                start -= int(offset)
-            num_tokens = all_token_info['length']
-            end = start + num_tokens
+        # find start/end position for sentence
+        start = index - all_token_info['pos_int']
+        if all_token_info['type'] == "key":  # pass same attn info for key
+            start -= int(offset)
+        num_tokens = all_token_info['length']
+        end = start + num_tokens
 
         # now get attn info
         if model == "bert":
             attn_data = self.attention_data_bert
             agg_attns = self.agg_att_data_bert['{}_{}'.format(
                 layer, head)][:num_tokens]
-        elif model in ["vit-32", "vit-nat"]:
-            attn_data = self.attention_data_vit_32
-        elif model == "vit-syn":
-            attn_data = self.attention_data_vit_syn
-        elif model == "vit-16":
-            attn_data = self.attention_data_vit_16
         else:
             attn_data = self.attention_data_gpt
             agg_attns = self.agg_att_data_gpt['{}_{}'.format(
@@ -639,96 +551,6 @@ class DataService(object):
                                                                              for t in agg_attns])
         norms = [] if model != "gpt-2" else [t['value_norm'] for t in attns]
         agg_norms = [] if model != "gpt-2" else [t['value_norm'] for t in agg_attns]
-
-        if model in ["vit-32", "vit-nat", "vit-syn"]:
-            overlaid_image = overlay_image_with_attention(
-                image.copy(), attns_vis[index % 50], 32)
-            overlaid_image = highlight_patches(overlaid_image, 32)
-
-            token_data = self.token_data_vit_32 if model in [
-                "vit-32", "vit-nat"] else self.token_data_vit_syn
-
-            if token_data['tokens'][index]['type'] == "key":
-                color = [227, 55, 143]
-            else:
-                color = [71, 222, 93]
-
-            if index % 50 == 0:
-                cls_color = color
-            else:
-                cls_color = [0, 0, 0]
-            overlaid_image = append_cls(
-                overlaid_image, attn[index % 50], cls_color, )
-            overlaid_image = highlight_a_patch(overlaid_image, all_token_info['position_row'], all_token_info['position_col'],
-                                               32, width=3, c=color)
-            all_token_info['originalPatchPath'] = convert_np_image_to_dataurl64(
-                overlaid_image)
-
-            arrowed_image = highlight_patches(image.copy(), 32)
-            arrowed_image = draw_arrow_on_image(
-                arrowed_image, attn, 32, thickness=2)
-
-            all_token_info['sentence'] = convert_np_image_to_dataurl64(
-                arrowed_image)
-
-            resize_factor = 8
-            arrowed_image = draw_arrow_only(np.zeros(shape=image.shape, dtype="uint8"), attn,
-                                            32 * resize_factor,
-                                            thickness=30,
-                                            resize_factor=resize_factor,
-                                            enhance_contrast=False,
-                                            color=[0, 0, 0])
-            arrowed_image = resize_image(
-                arrowed_image, factor=2 / resize_factor)
-            all_token_info['length'] = convert_np_image_to_dataurl64(
-                arrowed_image)
-
-            arrowed_image = highlight_patches(image.copy(), 32)
-            all_token_info['value'] = convert_np_image_to_dataurl64(
-                arrowed_image)
-
-        elif model == "vit-16":
-            overlaid_image = overlay_image_with_attention(
-                image.copy(), attns_vis[index % 197], 16)
-            overlaid_image = highlight_patches(overlaid_image, 16)
-            if self.token_data_vit_16['tokens'][index]['type'] == "key":
-                color = [227, 55, 143]
-            else:
-                color = [71, 222, 93]
-
-            if index % 197 == 0:
-                cls_color = color
-            else:
-                cls_color = [0, 0, 0]
-            overlaid_image = append_cls(
-                overlaid_image, attn[index % 50], cls_color, )
-            overlaid_image = highlight_a_patch(overlaid_image, all_token_info['position_row'], all_token_info['position_col'],
-                                               16, width=2, c=color)
-            all_token_info['originalPatchPath'] = convert_np_image_to_dataurl64(
-                overlaid_image)
-
-            arrowed_image = highlight_patches(image.copy(), 16)
-            arrowed_image = draw_arrow_on_image(
-                arrowed_image, attn, 16, thickness=1)
-
-            all_token_info['sentence'] = convert_np_image_to_dataurl64(
-                arrowed_image)
-
-            resize_factor = 8
-            arrowed_image = draw_arrow_only(np.zeros(shape=image.shape, dtype="uint8"), attn,
-                                            16 * resize_factor,
-                                            thickness=30,
-                                            resize_factor=resize_factor,
-                                            enhance_contrast=False,
-                                            color=[0, 0, 0])
-            arrowed_image = resize_image(
-                arrowed_image, factor=1 / resize_factor)
-            all_token_info['length'] = convert_np_image_to_dataurl64(
-                arrowed_image)
-
-            arrowed_image = highlight_patches(image.copy(), 16)
-            all_token_info['value'] = convert_np_image_to_dataurl64(
-                arrowed_image)
 
         return {
             'layer': layer,

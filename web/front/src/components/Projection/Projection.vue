@@ -58,10 +58,7 @@
                                         <span>transformer options:</span>
                                         <ul>
                                             <li v-for="option in modelOptions">
-                                                <i>{{ option.value }}</i> (<span
-                                                    v-if="option.value.includes('vit')">vision</span><span
-                                                    v-if="option.value.includes('nat')">, natural images</span><span
-                                                    v-if="option.value.includes('syn')">, synthetic images</span>
+                                                <i>{{ option.value }}</i> (
                                                 <span v-if="['bert', 'gpt-2'].includes(option.value)">language</span>)
                                             </li>
                                         </ul>
@@ -124,8 +121,8 @@
                             <font-awesome-icon icon="info" class="info-icon" />
                         </a-tooltip></p>
                     <a-checkbox v-model:checked="sizeByNorm" :class="{
-                            disabled: mode == 'matrix' || modelType.includes('vit')
-                        }">scale by
+                        disabled: mode == 'matrix' || modelType.includes('vit')
+                    }">scale by
                         norm</a-checkbox>
 
                     <!-- <p class="label">Developer Tool</p>
@@ -381,9 +378,7 @@ export default defineComponent({
                 get: () => store.state.modelType,
                 set: (v) => store.dispatch("switchModel", v)
             }),
-            // modelOptions: ["vit-16", "vit-32", "bert", "gpt-2"].map((x) => (
-            modelOptions: ["vit-nat", "bert", "gpt-2"].map((x) => (
-                // modelOptions: ["vit-nat", "vit-syn", "bert", "gpt-2"].map((x) => (
+            modelOptions: ["bert", "gpt-2"].map((x) => (
                 { value: x, label: x }
             )),
 
@@ -497,6 +492,7 @@ export default defineComponent({
 
 
         // show image data
+
         const showImages = () => {
             if (state.modelType.includes('vit')) {
                 const images = (matrixView.value as any).getUnique();

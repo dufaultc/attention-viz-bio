@@ -25,7 +25,6 @@ import { Deck, OrbitView, OrthographicView, View } from "@deck.gl/core/typed";
 import { PolygonLayer, ScatterplotLayer, TextLayer, LineLayer } from "@deck.gl/layers/typed";
 
 import { computeMatrixProjection } from "@/utils/dataTransform";
-import { computeVitMatrixProjection } from "@/utils/vitDataTransform";
 import RBush from 'rbush';
 
 // constants
@@ -190,9 +189,6 @@ export default defineComponent({
         // helper when drawing attention lines
         function get_k_attn(k: number) {
             let attention = state.curAttn;
-            if (state.modelType.includes("vit")) {
-                attention = state.attentionByToken.attns;
-            }
 
             let top_attn: any = [];
             // find top k attention weights for each query
@@ -595,6 +591,7 @@ export default defineComponent({
         const toLayers = () => {
             let { points, headings } = shallowData.value;
             if (!state.doneLoading) { // don't initialize until all data is loaded
+                console.log("why")
                 return [];
             }
 
@@ -627,18 +624,10 @@ export default defineComponent({
                         layers.push(toPointOutlineLayer([state.clickedPoint]));
                     }
                 }
-
                 if (state.modelType == "bert" || state.modelType == "gpt-2") {
                     layers.push(toPointLayer(layer_points));
                 }
-                else if (state.modelType.includes("vit")) {
-                    if (state.colorBy == "query_key" || state.colorBy == "no_outline") {
-                        layers.push(toImageLayer(layer_points));
-                    } else {
-                        layers.push(toImageLayer(layer_points));
-                        layers.push(toColorLayer(layer_points));
-                    }
-                }
+
 
                 if (state.showAll) {
                     let vis_points = [] as Typing.Point[];
@@ -660,11 +649,11 @@ export default defineComponent({
 
                 return layers;
             }
+            console.log(state.modelType);
             // else: return matrix view
             if (state.modelType == "bert" || state.modelType == "gpt-2") {
                 return [toPointLayer(points), toPlotHeadLayer(headings), toOverlayLayer(headings)];
-            }
-            else {
+            } else {
                 if (state.colorBy == "query_key" || state.colorBy == "no_outline") {
                     return [toImageLayer(points), toPlotHeadLayer(headings), toOverlayLayer(headings)];
                 }
@@ -814,30 +803,6 @@ export default defineComponent({
                     }
 
                     opposite_indices = Array.from({ length: pt_info.length }, (x, i) => i + start_index);
-                } else { // vit
-                    let offset = 0;
-                    if (["vit-32", "vit-nat", "vit-syn"].includes(state.modelType)) {
-                        offset = 50;
-                    }
-                    else {
-                        offset = 197;
-                    }
-
-                    let start_index = 0
-                    if (pt.value == "CLS") {
-                        start_index = pt.index - (pt_info.position * Math.sqrt(offset - 1) + pt_info.pos_int);
-                    } else {
-                        start_index = pt.index - (pt_info.position * Math.sqrt(offset - 1) + pt_info.pos_int + 1);
-                    }
-
-                    same_indices = Array.from({ length: offset }, (x, i) => i + start_index);
-                    if (pt_info.type === "key") {
-                        start_index -= offset;
-                    } else {
-                        start_index += offset;
-                    }
-
-                    opposite_indices = Array.from({ length: offset }, (x, i) => i + start_index);
                 }
 
                 let tokenIndices = [...same_indices, ...opposite_indices];
@@ -949,17 +914,11 @@ export default defineComponent({
                     let projData = computeMatrixProjection(matrixData, tokenData);
                     shallowData.value = projData;
                 }
-                else if (state.modelType.includes("vit")) {
-                    let projData = computeVitMatrixProjection(matrixData, tokenData);
-                    shallowData.value = projData;
-                }
             }
 
             // switch on labels if bert/gpt; off if vit
             if ((state.modelType == "bert" || state.modelType == "gpt-2") && !state.showAll) {
                 state.showAll = true;
-            } else if (state.modelType.includes("vit") && state.showAll) {
-                state.showAll = false;
             }
 
             if (state.mode == "single") {

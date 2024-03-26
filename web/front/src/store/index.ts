@@ -7,7 +7,7 @@ import { Typing } from "@/utils/typing";
 
 // Vuex docs: https://vuex.vuejs.org/
 
-const starter_model = "vit-nat";
+const starter_model = "bert";
 
 export interface State {
   matrixData: Typing.MatrixData[];
@@ -18,7 +18,7 @@ export interface State {
   head: number | string;
 
   renderState: boolean; // true when the canvas is being rendered; false upon finished
-  attentionLoading: boolean; 
+  attentionLoading: boolean;
   transitionInProgress: boolean;
   doneLoading: boolean;
   clearSelection: boolean;
@@ -31,7 +31,7 @@ export interface State {
   showAttn: boolean;
   resetAttn: boolean;
   attentionByToken: Typing.AttnByToken;
-  highlightedTokenIndices: number[]; 
+  highlightedTokenIndices: number[];
   curAttn: number[][];
   attnIndex: number;
   attnSide: string;
@@ -67,11 +67,11 @@ export const store = createStore<State>({
     transitionInProgress: false,
     clearSelection: false,
     attentionByToken: {
-      layer: 0, 
-      head: 0, 
-      attns: [], 
+      layer: 0,
+      head: 0,
+      attns: [],
       agg_attns: [],
-      norms: [], 
+      norms: [],
       agg_norms: [],
       token: {} as Typing.TokenData
     },
@@ -124,7 +124,7 @@ export const store = createStore<State>({
     updateRenderState(state, renderState) {
       state.renderState = renderState;
       console.log('state: renderState', renderState);
-    }, 
+    },
     setClearSelection(state, clearSelection) {
       state.clearSelection = clearSelection;
     },
@@ -206,7 +206,7 @@ export const store = createStore<State>({
     async init({ state, dispatch }) {
       dispatch('computeData');
     },
-    async computeData({state, commit}) {
+    async computeData({ state, commit }) {
       commit("updateRenderState", true);
       const matrixData = (await dataService.getMatrixData(state.modelType)).data;
       commit('setMatrixData', Object.freeze(matrixData));
@@ -216,12 +216,12 @@ export const store = createStore<State>({
 
       commit('updateDoneLoading', true);
     },
-    async switchModel({state, commit, dispatch}, model: string) {
+    async switchModel({ state, commit, dispatch }, model: string) {
       commit('setModelType', model);
       commit('updateDoneLoading', false);
       dispatch('computeData');
     },
-    async setClickedPoint({state, commit}, pt: Typing.Point) {
+    async setClickedPoint({ state, commit }, pt: Typing.Point) {
       console.log('setClickedPoint', pt);
       const attentionByToken = (await dataService.getAttentionByToken(pt, state.modelType));
       console.log('attentionDataByToken', attentionByToken);

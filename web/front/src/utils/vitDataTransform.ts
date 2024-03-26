@@ -73,9 +73,9 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
                 .scaleLinear()
                 .domain(d3.extent(data.map((x) => getZ(x))) as any)
                 .range([0, matrixCellHeight]);
-            return data.map(d => [+xScale(getX(d)).toFixed(3) + xoffset, 
-                +yScale(getY(d)).toFixed(3) + yoffset, 
-                +zScale(getZ(d)).toFixed(3)] as [number, number, number]);
+            return data.map(d => [+xScale(getX(d)).toFixed(3) + xoffset,
+            +yScale(getY(d)).toFixed(3) + yoffset,
+            +zScale(getZ(d)).toFixed(3)] as [number, number, number]);
         }
         const pointsCoordinates = {
             'tsne': computeCoordinate('tsne'),
@@ -146,13 +146,13 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
             },
             color: {
                 query_key: colorsByType[index],
-                position: [0,0,0],
-                pos_mod_5: [0,0,0],
-                punctuation: [0,0,0],
-                embed_norm: [0,0,0],
-                token_length: [0,0,0],
-                sent_length: [0,0,0],
-                token_freq: [0,0,0],
+                position: [0, 0, 0],
+                pos_mod_5: [0, 0, 0],
+                punctuation: [0, 0, 0],
+                embed_norm: [0, 0, 0],
+                token_length: [0, 0, 0],
+                sent_length: [0, 0, 0],
+                token_freq: [0, 0, 0],
                 row: colorsByRow[index],
                 column: colorsByCol[index],
                 qk_map: colorsByType[index],
@@ -209,21 +209,3 @@ const computeMatrixProjectionLabel = (matrixData: Typing.MatrixData[], matrixCel
     }
     return results;
 };
-
-const computeVitMatrixProjection = (matrixData: Typing.MatrixData[], tokenData: Typing.TokenData[], matrixCellWidth = 100, matrixCellHeight = 100, matrixCellMargin = 20, num_tokens = 7): Typing.Projection => {
-    const pts = computeMatrixProjectionPoint(matrixData, tokenData, matrixCellWidth, matrixCellHeight, matrixCellMargin, num_tokens)
-    
-    // get unique images
-    const images = tokenData.filter(td => td.originalImagePath != 'null').map(td => td.originalImagePath);
-    const uniqueImages = [...new Set(images)];
-    return {
-        'points': pts.points,
-        'range': pts.range,
-        'headings': computeMatrixProjectionLabel(matrixData, matrixCellWidth, matrixCellHeight, matrixCellMargin),
-        'unique': uniqueImages
-    }
-}
-
-export {
-    computeVitMatrixProjection
-}
