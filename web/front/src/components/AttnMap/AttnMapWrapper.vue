@@ -27,10 +27,8 @@ import * as _ from "underscore";
 import { useStore } from "@/store/index";
 import AttnMap from "./AttnMap.vue";
 import AggAttnMap from "./AggAttnMap.vue";
-import ImageAttnMap from "./ImageAttnMap.vue";
-
 export default {
-    components: { AttnMap, AggAttnMap, ImageAttnMap },
+    components: { AttnMap, AggAttnMap },
     setup() {
         const store = useStore();
 
