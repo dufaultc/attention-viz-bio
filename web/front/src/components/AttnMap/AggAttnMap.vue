@@ -150,6 +150,11 @@ export default {
                 state.cur_attn = hideKey(token_text.length - 1);
                 state.hidden["right"].push(token_text.length - 1);
             }
+            if (state.model == "DNABERT" && state.hideLast) {
+                // gpt doesn't have hide last option
+                state.cur_attn = hideKey(token_text.length - 1);
+                state.hidden["right"].push(token_text.length - 1);
+            }            
 
             if (state.attentionByToken.norms.length > 0) {
                 // don't weight for bert

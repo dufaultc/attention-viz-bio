@@ -266,7 +266,7 @@ export default defineComponent({
             // main scatterplot(s)
             return new ScatterplotLayer({
                 id: "point-layer",
-                pickable: state.mode == 'single' && state.modelType == "bert" || state.modelType == "gpt-2",
+                pickable: state.mode == 'single' && state.modelType == "bert" || state.modelType == "gpt-2" || state.modelType == "DNABERT",
                 data: points,
                 radiusMaxPixels: 5,
                 stroked: state.mode == 'single',
@@ -510,7 +510,7 @@ export default defineComponent({
                         return d.value;
                     }
                     // otherwise, in attn view
-                    if (state.modelType == "bert" || state.modelType == "gpt-2") {
+                    if (state.modelType == "bert" || state.modelType == "gpt-2" || state.modelType == "DNABERT") {
                         return state.tokenData[d.index].pos_int + ":" + d.value
                     }
                     return " " + state.tokenData[d.index].value + "\n (" + state.tokenData[d.index].position + "," + state.tokenData[d.index].pos_int + ")"
@@ -620,11 +620,11 @@ export default defineComponent({
                         layers.push(toLineLayer(attn_points));
                     }
                     // add extra outline for clicked point
-                    if (state.modelType == "bert" || state.modelType == "gpt-2") {
+                    if (state.modelType == "bert" || state.modelType == "gpt-2"  || state.modelType == "DNABERT") {
                         layers.push(toPointOutlineLayer([state.clickedPoint]));
                     }
                 }
-                if (state.modelType == "bert" || state.modelType == "gpt-2") {
+                if (state.modelType == "bert" || state.modelType == "gpt-2" || state.modelType == "DNABERT") {
                     layers.push(toPointLayer(layer_points));
                 }
 
@@ -651,7 +651,7 @@ export default defineComponent({
             }
             console.log(state.modelType);
             // else: return matrix view
-            if (state.modelType == "bert" || state.modelType == "gpt-2") {
+            if (state.modelType == "bert" || state.modelType == "gpt-2" || state.modelType == "DNABERT") {
                 return [toPointLayer(points), toPlotHeadLayer(headings), toOverlayLayer(headings)];
             } else {
                 if (state.colorBy == "query_key" || state.colorBy == "no_outline") {
@@ -910,14 +910,14 @@ export default defineComponent({
         const computedProjection = () => {
             let { matrixData, tokenData } = state;
             if (matrixData.length && tokenData.length) {
-                if (state.modelType == "gpt-2" || state.modelType == "bert") {
+                if (state.modelType == "gpt-2" || state.modelType == "bert"  || state.modelType == "DNABERT") {
                     let projData = computeMatrixProjection(matrixData, tokenData);
                     shallowData.value = projData;
                 }
             }
 
             // switch on labels if bert/gpt; off if vit
-            if ((state.modelType == "bert" || state.modelType == "gpt-2") && !state.showAll) {
+            if ((state.modelType == "bert" || state.modelType == "gpt-2" || state.modelType == "DNABERT") && !state.showAll) {
                 state.showAll = true;
             }
 

@@ -25,9 +25,9 @@
                 <a-checkbox v-model:checked="hideFirst" @click="hideTokens('first')" v-show="model == 'gpt-2'">first
                     token</a-checkbox>
                 <a-checkbox v-model:checked="hideFirst" @click="hideTokens('first')"
-                    v-show="model == 'bert'">[cls]</a-checkbox>
+                    v-show="model == 'bert' || model == 'DNABERT'">[cls]</a-checkbox>
                 <a-checkbox v-model:checked="hideLast" @click="hideTokens('last')"
-                    v-show="model == 'bert'">[sep]</a-checkbox>
+                    v-show="model == 'bert' || model == 'DNABERT'">[sep]</a-checkbox>
             </div>
             <div class="half" v-show="model == 'gpt-2'">
                 <p class="label">Weight by<a-tooltip placement="leftTop">
@@ -171,6 +171,11 @@ export default {
                 store.commit("setCurAttn", hideKey(token_text.length - 1));
                 state.hidden["right"].push(token_text.length - 1);
             }
+            if (state.model == "DNABERT" && state.hideLast) {
+                // gpt doesn't have hide last option
+                store.commit("setCurAttn", hideKey(token_text.length - 1));
+                state.hidden["right"].push(token_text.length - 1);
+            }            
 
             if (state.attentionByToken.norms.length > 0) {
                 // don't weight for bert

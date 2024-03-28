@@ -59,7 +59,7 @@
                                         <ul>
                                             <li v-for="option in modelOptions">
                                                 <i>{{ option.value }}</i> (
-                                                <span v-if="['bert', 'gpt-2'].includes(option.value)">language</span>)
+                                                <span v-if="['bert', 'gpt-2', 'DNABERT'].includes(option.value)">language</span>)
                                             </li>
                                         </ul>
                                     </template>
@@ -378,7 +378,7 @@ export default defineComponent({
                 get: () => store.state.modelType,
                 set: (v) => store.dispatch("switchModel", v)
             }),
-            modelOptions: ["bert", "gpt-2"].map((x) => (
+            modelOptions: ["bert", "gpt-2", "DNABERT"].map((x) => (
                 { value: x, label: x }
             )),
 
