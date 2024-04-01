@@ -481,10 +481,10 @@ class DataService(object):
         print('------inited------')
         # reading in data
         # bert
-        self.matrix_data_bert = read_matrix_data("bert")
-        self.attention_data_bert = read_attention_data("bert")
-        self.agg_att_data_bert = read_agg_attn_data("bert")
-        self.token_data_bert = read_token_data("bert")
+        #self.matrix_data_bert = read_matrix_data("bert")
+        #self.attention_data_bert = read_attention_data("bert")
+        #self.agg_att_data_bert = read_agg_attn_data("bert")
+        #self.token_data_bert = read_token_data("bert")
         #self.matrix_data_bert = read_matrix_data("DNABERT")
         #self.attention_data_bert = read_attention_data("DNABERT")
         #self.agg_att_data_bert = read_agg_attn_data("DNABERT")
@@ -496,10 +496,10 @@ class DataService(object):
         self.token_data_dnabert = read_token_data("DNABERT")                
 
         # gpt
-        self.matrix_data_gpt = read_matrix_data("gpt")
-        self.attention_data_gpt = read_attention_data("gpt")
-        self.agg_att_data_gpt = read_agg_attn_data("gpt")
-        self.token_data_gpt = read_token_data("gpt")
+        #self.matrix_data_gpt = read_matrix_data("gpt")
+        #self.attention_data_gpt = read_attention_data("gpt")
+        #self.agg_att_data_gpt = read_agg_attn_data("gpt")
+        #self.token_data_gpt = read_token_data("gpt")
 
         return None
 

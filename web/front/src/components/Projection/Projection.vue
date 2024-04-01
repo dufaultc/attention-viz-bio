@@ -59,7 +59,7 @@
                                         <ul>
                                             <li v-for="option in modelOptions">
                                                 <i>{{ option.value }}</i> (
-                                                <span v-if="['bert', 'gpt-2', 'DNABERT'].includes(option.value)">language</span>)
+                                                <span v-if="option.value.includes('DNABERT')">DNA</span>)
                                             </li>
                                         </ul>
                                     </template>
@@ -79,11 +79,23 @@
                             </a-select>
                         </div>
                     </div>
+                    <div class="label-grid-2">
+                        <div>
+                            <p class="label-2">Aggregation<a-tooltip placement="right">
+                                    <template #title>
+                                        <span>Aggregation options:</span>
+                                    </template>
+                                    <font-awesome-icon icon="info" class="info-icon" />
+                                </a-tooltip></p>
+                            <a-select v-model:value="aggregationType" style="width: 115px" :options="aggregationOptions">
+                            </a-select>
+                        </div>
+                    </div>                    
 
                     <p class="label">Search<a-tooltip placement="rightBottom">
                             <template #title>
-                                <span>search for <span v-if="!modelType.includes('vit')">a token</span><span v-else>an
-                                        object</span></span>
+                                <span>search for <span v-if="!aggregationType.includes('Region')">a genomic region</span><span v-else>a
+                                        6-mer</span></span>
                             </template>
                             <font-awesome-icon icon="info" class="info-icon" />
                         </a-tooltip></p>
@@ -121,7 +133,7 @@
                             <font-awesome-icon icon="info" class="info-icon" />
                         </a-tooltip></p>
                     <a-checkbox v-model:checked="sizeByNorm" :class="{
-                        disabled: mode == 'matrix' || modelType.includes('vit')
+                        disabled: mode == 'matrix' || aggregationType.includes('Region')
                     }">scale by
                         norm</a-checkbox>
 
@@ -268,20 +280,25 @@ const text_color_info = [
         desc: "token position in sentence modulo 5 (unnormalized)"
     },
     {
-        label: "punctuation",
-        value: "punctuation",
-        desc: "punctuation vs. non-punctuation tokens"
+        label: "genomic element type",
+        value: "genomic_element_type",
+        desc: "type of genomic element"
+    },    
+    {
+        label: "special tokens",
+        value: "special_tokens",
+        desc: "special tokens ([cls], [sep]) vs. regular tokens"
     },
     {
         label: "embedding norm",
         value: "embed_norm",
         desc: "token embedding norm, darker = higher norm"
     },
-    {
-        label: "token length",
-        value: "token_length",
-        desc: "number of chars in token, darker = longer token"
-    },
+    //{
+    //    label: "token length",
+    //    value: "token_length",
+    //    desc: "number of chars in token, darker = longer token"
+    //},
     {
         label: "sentence length",
         value: "sent_length",
@@ -294,7 +311,7 @@ const text_color_info = [
     }
 ];
 
-const image_color_info = [
+const aggregation_color_info = [
     {
         label: "query vs. key",
         value: "query_key",
@@ -378,9 +395,16 @@ export default defineComponent({
                 get: () => store.state.modelType,
                 set: (v) => store.dispatch("switchModel", v)
             }),
-            modelOptions: ["bert", "gpt-2", "DNABERT"].map((x) => (
+            aggregationType: computed({
+                get: () => store.state.aggregationType,
+                set: (v) => store.dispatch("switchAggregation", v)
+            }),            
+            modelOptions: ["DNABERT"].map((x) => (
                 { value: x, label: x }
             )),
+            aggregationOptions: ["None","Region"].map((x) => (
+                { value: x, label: x }
+            )),            
 
             tokenData: computed(() => store.state.tokenData),
             attnMsg: "click a plot to zoom in",
@@ -458,8 +482,13 @@ export default defineComponent({
 
         // switch placeholder text
         const switchPlaceholder = () => {
-            if (state.modelType.includes('vit')) {
-                state.placeholder = "e.g., person, background";
+            if (state.modelType.includes('DNABERT')) {
+                if (state.aggregationType.includes('Region')) {
+                    state.placeholder = "e.g., gene1, enhancer1";
+                } else {
+                    state.placeholder = "e.g., ACTGCC, TGACAA";
+                }
+                
             } else {
                 state.placeholder = "e.g., cat, april";
             }
@@ -474,7 +503,7 @@ export default defineComponent({
             if (state.modelType.includes("vit")) {
                 state.num_message = messageStart + numInstances + " images)";
             } else {
-                state.num_message = messageStart + numInstances + " sentences)";
+                state.num_message = messageStart + numInstances + " sequences)";
             }
         }
 
@@ -558,6 +587,21 @@ export default defineComponent({
                 switchColorOptions();
                 onClickReset();
             })
+        watch(() => state.aggregationType,
+            () => { // clear highlighted tokens for simplicity
+                store.commit("setHighlightedTokenIndices", []);
+                if (state.searchToken.length > 0) {
+                    state.searchToken = "";
+                    store.commit("setView", "none");
+                }
+                if (state.attnLoading) {
+                    store.commit("updateAttentionLoading", false);
+                }
+
+                switchPlaceholder();
+                switchColorOptions();
+                onClickReset();
+            })            
 
         watch(() => state.renderState, () => {
             if (!state.renderState) {

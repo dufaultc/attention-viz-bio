@@ -10,19 +10,19 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
     const types = tokenData.map(td => td.type);
     const lengths = tokenData.map(td => td.length);
 
-    const longestString = (arr: string[]) => { 
+    const longestString = (arr: string[]) => {
         // find longest string for later
-        return arr.reduce((max,name) => {
-             return name.length > max.length? name: max
-         }, arr[0])
-     }
+        return arr.reduce((max, name) => {
+            return name.length > max.length ? name : max
+        }, arr[0])
+    }
 
-     const shortestString = (arr: string[]) => { 
+    const shortestString = (arr: string[]) => {
         // find shortest string for later
-        return arr.reduce((max,name) => {
-             return name.length < max.length? name: max
-         }, arr[0])
-     }
+        return arr.reduce((max, name) => {
+            return name.length < max.length ? name : max
+        }, arr[0])
+    }
 
     const maxStringLength = longestString(values).length;
     const minStringLength = shortestString(values).length;
@@ -109,7 +109,7 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
     const colorsByFreq = tokenData.map((td) => getFreqColor(td));
 
     // by categorical position
-    const discreteColors =  ["#F5C0CA","#E3378F","#F0D6A5","#EDB50E","#C4D6B8","#5FB96C","#C8DDED","#528DDB","#D6BAE3","#A144DB"];
+    const discreteColors = ["#F5C0CA", "#E3378F", "#F0D6A5", "#EDB50E", "#C4D6B8", "#5FB96C", "#C8DDED", "#528DDB", "#D6BAE3", "#A144DB"];
     const numDiscrete = discreteColors.length / 2;
 
     const getDiscreteColor = (td: Typing.TokenData) => {
@@ -125,26 +125,25 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
     };
     const colorsByDiscretePosition = tokenData.map((td) => getDiscreteColor(td));
 
-    // by punctuation vs. not
+    // by special tokens vs. not
     // orange, pink, blue, green
-    const punctColors =  ["#F39226","#E3378F","#2E93D9","#5FB96C"];
-    const getPunctColor = (td: Typing.TokenData) => {
+    const specialTokenColors = ["#F39226", "#E3378F", "#2E93D9", "#5FB96C"];
+    const getSpecialTokensColor = (td: Typing.TokenData) => {
         var colorstr = "rgb()";
-        var punctuationless = td.value.replace(/[.,\/#!$?%\^&\*;:{}+=\-_`'"~()]/g, "");
 
-        if (punctuationless.length == 0 || td.value == "[sep]" || td.value == "[cls]") {
-            // token is only punctuation characters or special tokens
-            colorstr = td.type === "query" ? punctColors[3] : punctColors[2]
+        if (td.value == "[sep]" || td.value == "[cls]") {
+            // token is only special tokens characters or special tokens
+            colorstr = td.type === "query" ? specialTokenColors[3] : specialTokenColors[2]
         } else {
             // token has alphanumeric characters
-            colorstr = td.type === "query" ? punctColors[0] : punctColors[1]
+            colorstr = td.type === "query" ? specialTokenColors[0] : specialTokenColors[1]
         }
 
         const color = d3.color(colorstr)?.rgb();
         if (!color) return [0, 0, 0];
         return [color.r, color.g, color.b];
     }
-    const colorsByPunctuation = tokenData.map((td) => getPunctColor(td));
+    const colorsBySpecialTokens = tokenData.map((td) => getSpecialTokensColor(td));
 
     // compute msgs for each token
     const pos_msgs = tokenData.map(
@@ -160,8 +159,8 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
             `<b class='${td.type}'>${td.value}</b> (<i>${td.type}</i>, pos: ${td.pos_int} of ${td.length - 1}, length: ${td.value.length})`
     );
     const freq_msgs = tokenData.map(
-        (td) => 
-        `<b class='${td.type}'>${td.value}</b> (<i>${td.type}</i>, pos: ${td.pos_int} of ${td.length - 1}, freq: ${tokFreq[td.value]})`
+        (td) =>
+            `<b class='${td.type}'>${td.value}</b> (<i>${td.type}</i>, pos: ${td.pos_int} of ${td.length - 1}, freq: ${tokFreq[td.value]})`
     );
 
     // for recording the x/y ranges
@@ -222,9 +221,9 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
                 .scaleLinear()
                 .domain(d3.extent(data.map((x) => getZ(x))) as any)
                 .range([0, matrixCellHeight]);
-            return data.map(d => [+xScale(getX(d)).toFixed(3) + xoffset, 
-                +yScale(getY(d)).toFixed(3) + yoffset, 
-                +zScale(getZ(d)).toFixed(3)] as [number, number, number]);
+            return data.map(d => [+xScale(getX(d)).toFixed(3) + xoffset,
+            +yScale(getY(d)).toFixed(3) + yoffset,
+            +zScale(getZ(d)).toFixed(3)] as [number, number, number]);
         }
         const pointsCoordinates = {
             'tsne': computeCoordinate('tsne'),
@@ -250,7 +249,7 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
             if (!color) return [0, 0, 0];
             return [color.r, color.g, color.b];
         })
-    
+
         const norm_msgs = data.map(
             (x, index) =>
                 `<b class='${tokenData[index].type}'>${tokenData[index].value}</b> (<i>${tokenData[index].type}</i>, pos: ${tokenData[index].pos_int} of ${tokenData[index].length - 1}, norm: ${Math.round(x.norm * 100) / 100})`
@@ -295,9 +294,9 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
                 query_key: colorsByType[index],
                 position: colorsByPosition[index],
                 pos_mod_5: colorsByDiscretePosition[index],
-                punctuation: colorsByPunctuation[index],
+                special_tokens: colorsBySpecialTokens[index],
                 embed_norm: colorsByNorm[index],
-                token_length: colorsByLength[index],
+                //token_length: colorsByLength[index],
                 sent_length: colorsBySentLength[index],
                 token_freq: colorsByFreq[index],
                 row: [0, 0, 0],

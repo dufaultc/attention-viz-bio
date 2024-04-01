@@ -63,6 +63,7 @@ export default {
             userTheme: computed(() => store.state.userTheme),
             mode: computed(() => store.state.mode),
             model: computed(() => store.state.modelType),
+            aggregation: computed(() => store.state.aggregationType),
             attn_vals: [] as number[][],
             cur_attn: [] as number[][],
             weighted_attn: [] as number[][],

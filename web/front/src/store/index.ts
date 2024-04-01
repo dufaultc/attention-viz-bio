@@ -7,7 +7,7 @@ import { Typing } from "@/utils/typing";
 
 // Vuex docs: https://vuex.vuejs.org/
 
-const starter_model = "bert";
+const starter_model = "DNABERT";
 
 export interface State {
   matrixData: Typing.MatrixData[];
@@ -41,6 +41,7 @@ export interface State {
   showAgg: boolean;
 
   modelType: string; // bert or gpt
+  aggregationType: string;
   projectionMethod: keyof Typing.PointCoordinate; // tsne or umap
   colorBy: keyof Typing.PointColor; // different colorings (e.g., type, position, norm, etc.)
 
@@ -83,6 +84,7 @@ export const store = createStore<State>({
     weightByNorm: false,
     showAgg: true,
     modelType: starter_model,
+    aggregationType: 'None',
     projectionMethod: 'tsne',
     colorBy: starter_model.includes('vit') ? 'no_outline' : 'query_key',
     highlightedTokenIndices: [],
@@ -162,6 +164,10 @@ export const store = createStore<State>({
       state.modelType = modelType
       console.log('setModelType', modelType);
     },
+    setAggregationType(state, aggregationType) {
+      state.aggregationType = aggregationType
+      console.log('setAggregationType', aggregationType);
+    },
     setProjectionMethod(state, projectionMethod) {
       state.projectionMethod = projectionMethod
       console.log('setProjectionMethod', projectionMethod);
@@ -218,6 +224,11 @@ export const store = createStore<State>({
     },
     async switchModel({ state, commit, dispatch }, model: string) {
       commit('setModelType', model);
+      commit('updateDoneLoading', false);
+      dispatch('computeData');
+    },
+    async switchAggregation({ state, commit, dispatch }, aggregation: string) {
+      commit('setAggregationType', aggregation);
       commit('updateDoneLoading', false);
       dispatch('computeData');
     },

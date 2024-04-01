@@ -3,7 +3,7 @@
         <div class="legend-box" v-show="!renderState">
             <div id="legend" v-show="colorBy != 'no_outline'">
                 <div class="bar-contain" :class="{
-                        pos: colorBy == 'row' || colorBy == 'column' || colorBy == 'position' || colorBy == 'embed_norm' || colorBy == 'token_length' || colorBy == 'sent_length' || colorBy == 'token_freq', cat: colorBy == 'pos_mod_5', pun: colorBy == 'punctuation'
+                        pos: colorBy == 'row' || colorBy == 'column' || colorBy == 'position' || colorBy == 'embed_norm' || colorBy == 'token_length' || colorBy == 'sent_length' || colorBy == 'token_freq', cat: colorBy == 'pos_mod_5', pun: colorBy == 'special_tokens'
                     }">
                     <span>query</span>
                     <div class="bar">
@@ -12,7 +12,7 @@
                     </div>
                 </div>
                 <div class="bar-contain k" :class="{
-                    pos: colorBy == 'row' || colorBy == 'column' || colorBy == 'position' || colorBy == 'embed_norm' || colorBy == 'token_length' || colorBy == 'sent_length' || colorBy == 'token_freq', cat: colorBy == 'pos_mod_5', pun: colorBy == 'punctuation'
+                    pos: colorBy == 'row' || colorBy == 'column' || colorBy == 'position' || colorBy == 'embed_norm' || colorBy == 'token_length' || colorBy == 'sent_length' || colorBy == 'token_freq', cat: colorBy == 'pos_mod_5', pun: colorBy == 'special_tokens'
                 }">
                     <span>key</span>
                     <div class="bar">
@@ -39,6 +39,7 @@ export default defineComponent({
             colorBy: computed(() => store.state.colorBy),
             renderState: computed(() => store.state.renderState),
             modelType: computed(() => store.state.modelType),
+            aggregationType: computed(() => store.state.aggregationType),
             colorMsg: ""
         });
 
@@ -50,14 +51,14 @@ export default defineComponent({
                     return "0"
                 case 'position':
                     return "start"
-                case 'token_length':
+                //case 'token_length':
                 case 'sent_length':
                     return "short"
                 case 'embed_norm':
                 case 'token_freq':
                     return "low"
-                case 'punctuation':
-                    return ".?!"
+                case 'special_tokens':
+                    return "[sep]"
                 default:
                     ""
             }
@@ -74,11 +75,11 @@ export default defineComponent({
                 case 'embed_norm':
                 case 'token_freq':
                     return "high"
-                case 'token_length':
+                //case 'token_length':
                 case 'sent_length':
                     return "long"
-                case 'punctuation':
-                    return "abc"
+                case 'special_tokens':
+                    return "[cls]]"
                 default:
                     ""
             }

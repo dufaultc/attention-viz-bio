@@ -25,9 +25,9 @@
                 <a-checkbox v-model:checked="hideFirst" @click="hideTokens('first')" v-show="model == 'gpt-2'">first
                     token</a-checkbox>
                 <a-checkbox v-model:checked="hideFirst" @click="hideTokens('first')"
-                    v-show="model == 'bert' || model == 'DNABERT'">[cls]</a-checkbox>
+                    v-show="model == 'DNABERT'">[cls]</a-checkbox>
                 <a-checkbox v-model:checked="hideLast" @click="hideTokens('last')"
-                    v-show="model == 'bert' || model == 'DNABERT'">[sep]</a-checkbox>
+                    v-show="model == 'DNABERT'">[sep]</a-checkbox>
             </div>
             <div class="half" v-show="model == 'gpt-2'">
                 <p class="label">Weight by<a-tooltip placement="leftTop">
@@ -86,6 +86,7 @@ export default {
             view: computed(() => store.state.view),
             mode: computed(() => store.state.mode),
             model: computed(() => store.state.modelType),
+            aggregation: computed(() => store.state.aggregationType),
             attn_vals: [] as number[][],
             cur_attn: computed(() => store.state.curAttn),
             weighted_attn: [] as number[][],

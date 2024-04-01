@@ -46,9 +46,9 @@ export namespace Typing {
         query_key: number[];
         position: number[];
         pos_mod_5: number[];
-        punctuation: number[];
+        special_tokens: number[];
         embed_norm: number[];
-        token_length: number[];
+        //token_length: number[];
         sent_length: number[];
         token_freq: number[];
         row: number[];

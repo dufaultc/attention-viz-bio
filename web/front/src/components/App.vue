@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-light bg-light">
     <div class="container-fluid">
-      <span class="navbar-brand mb-0 h1">Attention Viz</span>
+      <span class="navbar-brand mb-0 h1">GenomeAttentionMap</span>
       <div class="dropdown">
         <label for="layernum" style="margin-left: 0">Zoom to Layer</label>
         <a-tooltip placement="bottomRight">

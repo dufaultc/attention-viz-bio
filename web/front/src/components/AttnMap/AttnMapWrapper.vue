@@ -1,5 +1,5 @@
 <template>
-    <div v-if="modelType == 'bert' || modelType == 'gpt-2' ||  modelType == 'DNABERT'">
+    <div v-if="modelType == 'DNABERT'">
         <!-- show bert/gpt attention -->
         <div class="row" :class="{ splitcol: showAgg }">
             <AttnMap :myID="'sentAttn'" :otherID="'aggAttn'" />
@@ -34,6 +34,7 @@ export default {
 
         const state = reactive({
             modelType: computed(() => store.state.modelType),
+            aggregationType: computed(() => store.state.aggregationType),
             view: computed(() => store.state.view),
             hideFirst: false,
             hideLast: false,

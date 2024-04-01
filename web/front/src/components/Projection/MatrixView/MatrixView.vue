@@ -82,6 +82,7 @@ export default defineComponent({
             activePoints: [] as Typing.Point[],
 
             modelType: computed(() => store.state.modelType),
+            aggregationType: computed(() => store.state.aggregationType),
             projectionMethod: computed(() => store.state.projectionMethod),
             colorBy: computed(() => store.state.colorBy),
             view: computed(() => store.state.view),
@@ -266,7 +267,7 @@ export default defineComponent({
             // main scatterplot(s)
             return new ScatterplotLayer({
                 id: "point-layer",
-                pickable: state.mode == 'single' && state.modelType == "bert" || state.modelType == "gpt-2" || state.modelType == "DNABERT",
+                pickable: state.mode == 'single' && state.modelType == "DNABERT" && state.aggregationType == "None",
                 data: points,
                 radiusMaxPixels: 5,
                 stroked: state.mode == 'single',
@@ -317,12 +318,12 @@ export default defineComponent({
                                 return d.color.position
                             case 'pos_mod_5':
                                 return d.color.pos_mod_5
-                            case 'punctuation':
-                                return d.color.punctuation
+                            case 'genomic_element_type':
+                                return d.color.genomic_element_type
                             case 'embed_norm':
                                 return d.color.embed_norm
-                            case 'token_length':
-                                return d.color.token_length
+                            //case 'token_length':
+                            //    return d.color.token_length
                             case 'sent_length':
                                 return d.color.sent_length
                             case 'token_freq':
@@ -510,7 +511,7 @@ export default defineComponent({
                         return d.value;
                     }
                     // otherwise, in attn view
-                    if (state.modelType == "bert" || state.modelType == "gpt-2" || state.modelType == "DNABERT") {
+                    if (state.modelType == "DNABERT") {
                         return state.tokenData[d.index].pos_int + ":" + d.value
                     }
                     return " " + state.tokenData[d.index].value + "\n (" + state.tokenData[d.index].position + "," + state.tokenData[d.index].pos_int + ")"
@@ -620,11 +621,11 @@ export default defineComponent({
                         layers.push(toLineLayer(attn_points));
                     }
                     // add extra outline for clicked point
-                    if (state.modelType == "bert" || state.modelType == "gpt-2"  || state.modelType == "DNABERT") {
+                    if ( state.modelType == "DNABERT") {
                         layers.push(toPointOutlineLayer([state.clickedPoint]));
                     }
                 }
-                if (state.modelType == "bert" || state.modelType == "gpt-2" || state.modelType == "DNABERT") {
+                if ( state.modelType == "DNABERT") {
                     layers.push(toPointLayer(layer_points));
                 }
 
@@ -651,7 +652,7 @@ export default defineComponent({
             }
             console.log(state.modelType);
             // else: return matrix view
-            if (state.modelType == "bert" || state.modelType == "gpt-2" || state.modelType == "DNABERT") {
+            if (state.modelType == "DNABERT") {
                 return [toPointLayer(points), toPlotHeadLayer(headings), toOverlayLayer(headings)];
             } else {
                 if (state.colorBy == "query_key" || state.colorBy == "no_outline") {
@@ -711,7 +712,7 @@ export default defineComponent({
                         switch (state.colorBy) {
                             case 'query_key':
                             case 'position':
-                            case 'punctuation':
+                            case 'special_tokens':
                             case 'sent_length':
                             case 'column':
                             case 'row':
@@ -910,14 +911,14 @@ export default defineComponent({
         const computedProjection = () => {
             let { matrixData, tokenData } = state;
             if (matrixData.length && tokenData.length) {
-                if (state.modelType == "gpt-2" || state.modelType == "bert"  || state.modelType == "DNABERT") {
+                if (state.modelType == "DNABERT") {
                     let projData = computeMatrixProjection(matrixData, tokenData);
                     shallowData.value = projData;
                 }
             }
 
             // switch on labels if bert/gpt; off if vit
-            if ((state.modelType == "bert" || state.modelType == "gpt-2" || state.modelType == "DNABERT") && !state.showAll) {
+            if ((state.modelType == "DNABERT") && !state.showAll) {
                 state.showAll = true;
             }
 
