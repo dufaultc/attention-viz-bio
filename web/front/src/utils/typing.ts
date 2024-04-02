@@ -11,21 +11,14 @@ export namespace Typing {
         umap_x: number;
         umap_y: number;
         norm: number;
-        tsne_x_3d: number;
-        tsne_y_3d: number;
-        tsne_z_3d: number;
-        umap_x_3d: number;
-        umap_y_3d: number;
-        umap_z_3d: number;
         pca_x: number;
         pca_y: number;
-        pca_x_3d: number;
-        pca_y_3d: number;
-        pca_z_3d: number;
     }
     export interface TokenData { // shared by all heads and layers
         position: number;
         pos_int: number;
+        region_type: string;
+        genomic_element: string;
         length: number;
         sentence: string;
         type: string;
@@ -38,15 +31,13 @@ export namespace Typing {
         tsne: [number, number];
         umap: [number, number];
         pca: [number, number];
-        tsne_3d: [number, number, number];
-        umap_3d: [number, number, number];
-        pca_3d: [number, number, number];
     }
     export interface PointColor {
         query_key: number[];
         position: number[];
         pos_mod_5: number[];
         special_tokens: number[];
+        region_type: number[];
         embed_norm: number[];
         //token_length: number[];
         sent_length: number[];

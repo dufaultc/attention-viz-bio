@@ -495,6 +495,11 @@ class DataService(object):
         self.agg_att_data_dnabert = read_agg_attn_data("DNABERT")
         self.token_data_dnabert = read_token_data("DNABERT")                
 
+        self.matrix_data_dnabert_agg = read_matrix_data("DNABERT_agg")
+        self.attention_data_dnabert_agg = read_attention_data("DNABERT_agg")
+        self.agg_att_data_dnabert_agg = read_agg_attn_data("DNABERT_agg")
+        self.token_data_dnabert_agg = read_token_data("DNABERT_agg")                
+
         # gpt
         #self.matrix_data_gpt = read_matrix_data("gpt")
         #self.attention_data_gpt = read_attention_data("gpt")
@@ -507,14 +512,18 @@ class DataService(object):
         if model == "bert":
             return self.matrix_data_bert
         elif model == "DNABERT":
-            return self.matrix_data_dnabert        
+            return self.matrix_data_dnabert  
+        elif model == "DNABERT_agg":
+            return self.matrix_data_dnabert_agg                
         return self.matrix_data_gpt
 
     def get_token_data(self, model):
         if model == "bert":
             return self.token_data_bert
         elif model == "DNABERT":
-            return self.token_data_dnabert        
+            return self.token_data_dnabert      
+        elif model == "DNABERT_agg":
+            return self.token_data_dnabert_agg              
         return self.token_data_gpt
 
     def get_attention_by_token(self, token, model):
@@ -528,7 +537,10 @@ class DataService(object):
             offset = len(self.token_data_bert['tokens']) / 2
         elif model == "DNABERT":
             all_token_info = self.token_data_dnabert['tokens'][index]
-            offset = len(self.token_data_dnabert['tokens']) / 2            
+            offset = len(self.token_data_dnabert['tokens']) / 2    
+        elif model == "DNABERT_agg":
+            all_token_info = self.token_data_dnabert_agg['tokens'][index]
+            offset = len(self.token_data_dnabert_agg['tokens']) / 2                        
         else:
             all_token_info = self.token_data_gpt['tokens'][index]
             offset = len(self.token_data_gpt['tokens']) / 2
@@ -548,7 +560,11 @@ class DataService(object):
         elif model == "DNABERT":
             attn_data = self.attention_data_dnabert
             agg_attns = self.agg_att_data_dnabert['{}_{}'.format(
-                layer, head)][:num_tokens]            
+                layer, head)][:num_tokens]    
+        elif model == "DNABERT_agg":
+            attn_data = self.attention_data_dnabert_agg
+            agg_attns = self.agg_att_data_dnabert_agg['{}_{}'.format(
+                layer, head)][:num_tokens]                        
         else:
             attn_data = self.attention_data_gpt
             agg_attns = self.agg_att_data_gpt['{}_{}'.format(
@@ -567,7 +583,7 @@ class DataService(object):
 
         attn = [t['attention'] for t in attns]
         attns_vis = [t['attention'] for t in attns_vis]
-        agg_attn = [] if model not in ["bert", "gpt-2", "DNABERT"] else normalize_attn([t['attention'][:num_tokens]
+        agg_attn = [] if model not in ["bert", "gpt-2", "DNABERT", "DNABERT_agg"] else normalize_attn([t['attention'][:num_tokens]
                                                                              for t in agg_attns])
         norms = [] if model != "gpt-2" else [t['value_norm'] for t in attns]
         agg_norms = [] if model != "gpt-2" else [t['value_norm'] for t in agg_attns]

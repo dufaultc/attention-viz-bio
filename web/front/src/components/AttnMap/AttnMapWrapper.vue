@@ -1,5 +1,5 @@
 <template>
-    <div v-if="modelType == 'DNABERT'">
+    <div v-if="modelType == 'DNABERT' || modelType == 'DNABERT_agg' ">
         <!-- show bert/gpt attention -->
         <div class="row" :class="{ splitcol: showAgg }">
             <AttnMap :myID="'sentAttn'" :otherID="'aggAttn'" />

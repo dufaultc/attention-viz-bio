@@ -3,7 +3,7 @@
         <div class="legend-box" v-show="!renderState">
             <div id="legend" v-show="colorBy != 'no_outline'">
                 <div class="bar-contain" :class="{
-                        pos: colorBy == 'row' || colorBy == 'column' || colorBy == 'position' || colorBy == 'embed_norm' || colorBy == 'token_length' || colorBy == 'sent_length' || colorBy == 'token_freq', cat: colorBy == 'pos_mod_5', pun: colorBy == 'special_tokens'
+                        pos: colorBy == 'row' || colorBy == 'column' || colorBy == 'position' || colorBy == 'embed_norm' || colorBy == 'token_length' || colorBy == 'sent_length' || colorBy == 'token_freq', cat: colorBy == 'pos_mod_5', reg: colorBy == 'region_type', pun: colorBy == 'special_tokens'
                     }">
                     <span>query</span>
                     <div class="bar">
@@ -12,7 +12,7 @@
                     </div>
                 </div>
                 <div class="bar-contain k" :class="{
-                    pos: colorBy == 'row' || colorBy == 'column' || colorBy == 'position' || colorBy == 'embed_norm' || colorBy == 'token_length' || colorBy == 'sent_length' || colorBy == 'token_freq', cat: colorBy == 'pos_mod_5', pun: colorBy == 'special_tokens'
+                    pos: colorBy == 'row' || colorBy == 'column' || colorBy == 'position' || colorBy == 'embed_norm' || colorBy == 'token_length' || colorBy == 'sent_length' || colorBy == 'token_freq', cat: colorBy == 'pos_mod_5', reg: colorBy == 'region_type', pun: colorBy == 'special_tokens'
                 }">
                     <span>key</span>
                     <div class="bar">
@@ -52,13 +52,15 @@ export default defineComponent({
                 case 'position':
                     return "start"
                 //case 'token_length':
+                case 'region_type':
+                    return "sep"
                 case 'sent_length':
                     return "short"
                 case 'embed_norm':
                 case 'token_freq':
                     return "low"
                 case 'special_tokens':
-                    return "[sep]"
+                    return "ACTG"
                 default:
                     ""
             }
@@ -73,13 +75,15 @@ export default defineComponent({
                 case 'pos_mod_5':
                     return "4"
                 case 'embed_norm':
+                case 'region_type':
+                    return "exon"                    
                 case 'token_freq':
                     return "high"
                 //case 'token_length':
                 case 'sent_length':
                     return "long"
                 case 'special_tokens':
-                    return "[cls]]"
+                    return "[cls]"
                 default:
                     ""
             }
@@ -169,6 +173,25 @@ export default defineComponent({
             #C4D6B8 40% 60%,
             #F0D6A5 60% 80%,
             #F5C0CA 80%);
+}
+/* regions type */
+.bar-contain.reg .bar {
+    background: linear-gradient(#2E93D9 17%,
+            #E15759 17% 34%,
+            #F28E2B 34% 51%,
+            #59A14F 51% 68%,
+            #E3378F 68% 84%,
+            #76B7B2 84%);
+    height: calc(120px + 1vw);
+}
+
+.bar-contain.k.reg .bar {
+    background: linear-gradient(#beddf3 17%,
+            #f0a8a9 17% 34%,
+            #fad9b7 34% 51%,
+            #bfddbb 51% 68%,
+            #f5bcda 68% 84%,
+            #bcdcd9 84%);
 }
 
 /* categorical */

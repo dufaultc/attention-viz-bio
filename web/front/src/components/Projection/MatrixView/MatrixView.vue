@@ -126,11 +126,11 @@ export default defineComponent({
         const getPointCoordinate = (d: Typing.Point) => {
             switch (state.projectionMethod) {
                 case "tsne":
-                    return state.dimension === "2D" ? d.coordinate.tsne : d.coordinate.tsne_3d;
+                    return state.dimension === "2D" ? d.coordinate.tsne : d.coordinate.tsne;
                 case "umap":
-                    return state.dimension === "2D" ? d.coordinate.umap : d.coordinate.umap_3d;
+                    return state.dimension === "2D" ? d.coordinate.umap : d.coordinate.umap;
                 case "pca":
-                    return state.dimension === "2D" ? d.coordinate.pca : d.coordinate.pca_3d;
+                    return state.dimension === "2D" ? d.coordinate.pca : d.coordinate.pca;
                 default:
                     throw Error("Invalid projection method!");
             }
@@ -243,10 +243,13 @@ export default defineComponent({
                 id: "point-outline-layer",
                 pickable: false,
                 data: points,
-                radiusMaxPixels: 8,
+                radiusMaxPixels: 14,
                 stroked: true,
                 getPosition: (d: Typing.Point) => getPointCoordinate(d),
                 getRadius: (d: Typing.Point) => {
+                    if (state.modelType === "DNABERT_agg") {
+                        return 14;
+                    }                    
                     return state.mode === "single" && state.sizeByNorm
                         ? (0.15 + d.normScaled * 0.5) * 3
                         : 4
@@ -267,24 +270,41 @@ export default defineComponent({
             // main scatterplot(s)
             return new ScatterplotLayer({
                 id: "point-layer",
-                pickable: state.mode == 'single' && state.modelType == "DNABERT" && state.aggregationType == "None",
+                pickable: state.mode == 'single' && (state.modelType == "DNABERT" || state.modelType == "DNABERT_agg") && state.aggregationType == "None",
                 data: points,
-                radiusMaxPixels: 5,
+                radiusMaxPixels: 10,
                 stroked: state.mode == 'single',
                 getPosition: (d: Typing.Point) => getPointCoordinate(d),
                 getRadius: (d: Typing.Point) => {
-                    let defaultSize = 0.4,
+                    let defaultSize, highlightedSize;
+                    if (state.modelType === "DNABERT_agg") {
+                        defaultSize = 4,
+                        highlightedSize = 8;
+
+                        if (state.mode === "matrix") {
+                            highlightedSize = 8;
+                        }
+
+                        if (state.mode === "single" && state.sizeByNorm) {
+                            // scale dot size by norm if checkbox on
+                            defaultSize = 4 + d.normScaled * 0.5;
+                            highlightedSize = defaultSize * 2;
+                        }
+                    } else {
+                        defaultSize = 0.4,
                         highlightedSize = 2;
 
-                    if (state.mode === "matrix") {
-                        highlightedSize = 4;
-                    }
+                        if (state.mode === "matrix") {
+                            highlightedSize = 4;
+                        }
 
-                    if (state.mode === "single" && state.sizeByNorm) {
-                        // scale dot size by norm if checkbox on
-                        defaultSize = 0.15 + d.normScaled * 0.5;
-                        highlightedSize = defaultSize * 2;
-                    }
+                        if (state.mode === "single" && state.sizeByNorm) {
+                            // scale dot size by norm if checkbox on
+                            defaultSize = 0.15 + d.normScaled * 0.5;
+                            highlightedSize = defaultSize * 2;
+                        }
+                    }   
+
 
                     // otherwise, proceed as normal
                     if (state.highlightedTokenIndices.length === 0) return defaultSize;
@@ -318,12 +338,14 @@ export default defineComponent({
                                 return d.color.position
                             case 'pos_mod_5':
                                 return d.color.pos_mod_5
-                            case 'genomic_element_type':
-                                return d.color.genomic_element_type
+                            case 'region_type':
+                                return d.color.region_type
                             case 'embed_norm':
                                 return d.color.embed_norm
                             //case 'token_length':
                             //    return d.color.token_length
+                            case 'special_tokens':
+                                return d.color.special_tokens                           
                             case 'sent_length':
                                 return d.color.sent_length
                             case 'token_freq':
@@ -504,14 +526,14 @@ export default defineComponent({
                     let offset = 1 / Math.pow(1.5, state.zoom);
                     return coord.length == 2
                         ? [coord[0] + offset, coord[1]]
-                        : [coord[0] + offset, coord[1], coord[2] + offset];
+                        : [coord[0] + offset, coord[1], coord[1] + offset];
                 },
                 getText: (d: Typing.Point) => {
                     if (state.view != "attn") {
                         return d.value;
                     }
                     // otherwise, in attn view
-                    if (state.modelType == "DNABERT") {
+                    if (state.modelType == "DNABERT" || state.modelType == "DNABERT_agg" ) {
                         return state.tokenData[d.index].pos_int + ":" + d.value
                     }
                     return " " + state.tokenData[d.index].value + "\n (" + state.tokenData[d.index].position + "," + state.tokenData[d.index].pos_int + ")"
@@ -621,11 +643,11 @@ export default defineComponent({
                         layers.push(toLineLayer(attn_points));
                     }
                     // add extra outline for clicked point
-                    if ( state.modelType == "DNABERT") {
+                    if ( state.modelType == "DNABERT" || state.modelType == "DNABERT_agg") {
                         layers.push(toPointOutlineLayer([state.clickedPoint]));
                     }
                 }
-                if ( state.modelType == "DNABERT") {
+                if ( state.modelType == "DNABERT" ||  state.modelType == "DNABERT_agg") {
                     layers.push(toPointLayer(layer_points));
                 }
 
@@ -652,7 +674,7 @@ export default defineComponent({
             }
             console.log(state.modelType);
             // else: return matrix view
-            if (state.modelType == "DNABERT") {
+            if (state.modelType == "DNABERT" || state.modelType == "DNABERT_agg") {
                 return [toPointLayer(points), toPlotHeadLayer(headings), toOverlayLayer(headings)];
             } else {
                 if (state.colorBy == "query_key" || state.colorBy == "no_outline") {
@@ -713,6 +735,7 @@ export default defineComponent({
                             case 'query_key':
                             case 'position':
                             case 'special_tokens':
+                            case 'region_type':
                             case 'sent_length':
                             case 'column':
                             case 'row':
@@ -723,8 +746,8 @@ export default defineComponent({
                                 return d.msg.categorical
                             case 'embed_norm':
                                 return d.msg.norm
-                            case 'token_length':
-                                return d.msg.length
+                            //case 'token_length':
+                            //    return d.msg.length
                             case 'token_freq':
                                 return d.msg.freq
                             default:
@@ -779,9 +802,9 @@ export default defineComponent({
                 store.commit("updateAttentionLoading", true);
                 if (state.view != "attn") { // switch to attention view if not already
                     store.commit("setView", 'attn');
-                    if (!state.showAll) {
-                        state.showAll = true; // turn on labels by default
-                    }
+                    //if (!state.showAll) {
+                    //    state.showAll = true; // turn on labels by default
+                    //}
                 }
 
                 let pt = info.object as Typing.Point;
@@ -911,15 +934,15 @@ export default defineComponent({
         const computedProjection = () => {
             let { matrixData, tokenData } = state;
             if (matrixData.length && tokenData.length) {
-                if (state.modelType == "DNABERT") {
+                if (state.modelType == "DNABERT" || state.modelType == "DNABERT_agg") {
                     let projData = computeMatrixProjection(matrixData, tokenData);
                     shallowData.value = projData;
                 }
             }
 
             // switch on labels if bert/gpt; off if vit
-            if ((state.modelType == "DNABERT") && !state.showAll) {
-                state.showAll = true;
+            if ((state.modelType == "DNABERT" || state.modelType == "DNABERT_agg") && !state.showAll) {
+                state.showAll = false;
             }
 
             if (state.mode == "single") {

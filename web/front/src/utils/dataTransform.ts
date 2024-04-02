@@ -7,6 +7,7 @@ import * as _ from "underscore";
 const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData: Typing.TokenData[], matrixCellWidth = 100, matrixCellHeight = 100, matrixCellMargin = 20) => {
     var results = [] as Typing.Point[];
     const values = tokenData.map(td => td.value);
+    //const genomic_element_types = tokenData.map(td => td.genomic_element_type);
     const types = tokenData.map(td => td.type);
     const lengths = tokenData.map(td => td.length);
 
@@ -125,13 +126,41 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
     };
     const colorsByDiscretePosition = tokenData.map((td) => getDiscreteColor(td));
 
+    // Function to get color based on genomic element type
+    const getColorByRegionType = (td: Typing.TokenData) => {
+        var colorstr = "rgb()";
+        if (td.type === "query") {
+            if (td.region_type == "exon") { colorstr = "#2E93D9" }
+            else if (td.region_type == "intron") { colorstr = "#E15759" }
+            else if (td.region_type == "upstream") { colorstr = "#F28E2B" }
+            else if (td.region_type == "downstream") { colorstr = "#59A14F" }
+            else if (td.region_type == "cls") { colorstr = "#E3378F" }
+            else if (td.region_type == "sep") { colorstr = "#76B7B2" }
+            else { colorstr = "#000000" }
+        } else {
+            if (td.region_type == "exon") { colorstr = "#beddf3" }
+            else if (td.region_type == "intron") { colorstr = "#f0a8a9" }
+            else if (td.region_type == "upstream") { colorstr = "#fad9b7" }
+            else if (td.region_type == "downstream") { colorstr = "#bfddbb" }
+            else if (td.region_type == "cls") { colorstr = "#f5bcda" }
+            else if (td.region_type == "sep") { colorstr = "#bcdcd9" }
+            else { colorstr = "#808080" }
+        }
+
+        const color = d3.color(colorstr)?.rgb();
+        if (!color) return [0, 0, 0];
+        return [color.r, color.g, color.b];
+    };
+    // Map each token to its corresponding color based on genomic element type
+    const colorsByRegionType = tokenData.map((td) => getColorByRegionType(td));
+
     // by special tokens vs. not
     // orange, pink, blue, green
     const specialTokenColors = ["#F39226", "#E3378F", "#2E93D9", "#5FB96C"];
     const getSpecialTokensColor = (td: Typing.TokenData) => {
         var colorstr = "rgb()";
 
-        if (td.value == "[sep]" || td.value == "[cls]") {
+        if (td.value == "[SEP]" || td.value == "[CLS]") {
             // token is only special tokens characters or special tokens
             colorstr = td.type === "query" ? specialTokenColors[3] : specialTokenColors[2]
         } else {
@@ -182,24 +211,12 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
                 if (projectionMethod === 'tsne') return x.tsne_x
                 else if (projectionMethod === 'umap') return x.umap_x
                 else if (projectionMethod === 'pca') return x.pca_x
-                else if (projectionMethod === 'tsne_3d') return x.tsne_x_3d
-                else if (projectionMethod === 'umap_3d') return x.umap_x_3d
-                else if (projectionMethod === 'pca_3d') return x.pca_x_3d
                 else throw Error('Invalid projection method')
             }
             const getY = (x: Typing.TokenCoordinate) => {
                 if (projectionMethod === 'tsne') return x.tsne_y
                 else if (projectionMethod === 'umap') return x.umap_y
                 else if (projectionMethod === 'pca') return x.pca_y
-                else if (projectionMethod === 'tsne_3d') return x.tsne_y_3d
-                else if (projectionMethod === 'umap_3d') return x.umap_y_3d
-                else if (projectionMethod === 'pca_3d') return x.pca_y_3d
-                else throw Error('Invalid projection method')
-            }
-            const getZ = (x: Typing.TokenCoordinate) => {
-                if (projectionMethod === 'tsne_3d') return x.tsne_z_3d
-                else if (projectionMethod === 'umap_3d') return x.umap_z_3d
-                else if (projectionMethod === 'pca_3d') return x.pca_z_3d
                 else throw Error('Invalid projection method')
             }
 
@@ -213,25 +230,22 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
                 .domain(d3.extent(data.map((x) => getY(x))) as any)
                 .range([0, matrixCellHeight]);
 
-            if (projectionMethod === "tsne" || projectionMethod === "umap" || projectionMethod === "pca") { // 2d case
-                return data.map(d => [+xScale(getX(d)).toFixed(3) + xoffset, +yScale(getY(d)).toFixed(3) + yoffset] as [number, number]);
-            }
+            //if (projectionMethod === "tsne" || projectionMethod === "umap" || projectionMethod === "pca") { // 2d case
+            return data.map(d => [+xScale(getX(d)).toFixed(3) + xoffset, +yScale(getY(d)).toFixed(3) + yoffset] as [number, number]);
+            //}
             // 3d case
-            const zScale = d3
-                .scaleLinear()
-                .domain(d3.extent(data.map((x) => getZ(x))) as any)
-                .range([0, matrixCellHeight]);
-            return data.map(d => [+xScale(getX(d)).toFixed(3) + xoffset,
-            +yScale(getY(d)).toFixed(3) + yoffset,
-            +zScale(getZ(d)).toFixed(3)] as [number, number, number]);
+            //const zScale = d3
+            //    .scaleLinear()
+            //    .domain(d3.extent(data.map((x) => getZ(x))) as any)
+            //    .range([0, matrixCellHeight]);
+            //return data.map(d => [+xScale(getX(d)).toFixed(3) + xoffset,
+            //+yScale(getY(d)).toFixed(3) + yoffset,
+            //+zScale(getZ(d)).toFixed(3)] as [number, number, number]);
         }
         const pointsCoordinates = {
             'tsne': computeCoordinate('tsne'),
             'umap': computeCoordinate('umap'),
-            'pca': computeCoordinate('pca'),
-            'tsne_3d': computeCoordinate('tsne_3d'),
-            'umap_3d': computeCoordinate('umap_3d'),
-            'pca_3d': computeCoordinate('pca_3d')
+            'pca': computeCoordinate('pca')
         }
 
         // compute colors based on norms
@@ -285,16 +299,14 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
             coordinate: {
                 tsne: pointsCoordinates.tsne[index] as [number, number],
                 umap: pointsCoordinates.umap[index] as [number, number],
-                pca: pointsCoordinates.pca[index] as [number, number],
-                tsne_3d: pointsCoordinates.tsne_3d[index] as [number, number, number],
-                umap_3d: pointsCoordinates.umap_3d[index] as [number, number, number],
-                pca_3d: pointsCoordinates.pca_3d[index] as [number, number, number],
+                pca: pointsCoordinates.pca[index] as [number, number]
             },
             color: {
                 query_key: colorsByType[index],
                 position: colorsByPosition[index],
                 pos_mod_5: colorsByDiscretePosition[index],
                 special_tokens: colorsBySpecialTokens[index],
+                region_type: colorsByRegionType[index],
                 embed_norm: colorsByNorm[index],
                 //token_length: colorsByLength[index],
                 sent_length: colorsBySentLength[index],

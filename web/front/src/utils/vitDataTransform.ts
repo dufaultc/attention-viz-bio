@@ -36,26 +36,15 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
                 if (projectionMethod === 'tsne') return x.tsne_x
                 else if (projectionMethod === 'umap') return x.umap_x
                 else if (projectionMethod === 'pca') return x.pca_x
-                else if (projectionMethod === 'tsne_3d') return x.tsne_x_3d
-                else if (projectionMethod === 'umap_3d') return x.umap_x_3d
-                else if (projectionMethod === 'pca_3d') return x.pca_x_3d
                 else throw Error('Invalid projection method')
             }
             const getY = (x: Typing.TokenCoordinate) => {
                 if (projectionMethod === 'tsne') return x.tsne_y
                 else if (projectionMethod === 'umap') return x.umap_y
                 else if (projectionMethod === 'pca') return x.pca_y
-                else if (projectionMethod === 'tsne_3d') return x.tsne_y_3d
-                else if (projectionMethod === 'umap_3d') return x.umap_y_3d
-                else if (projectionMethod === 'pca_3d') return x.pca_y_3d
                 else throw Error('Invalid projection method')
             }
-            const getZ = (x: Typing.TokenCoordinate) => {
-                if (projectionMethod === 'tsne_3d') return x.tsne_z_3d
-                else if (projectionMethod === 'umap_3d') return x.umap_z_3d
-                else if (projectionMethod === 'pca_3d') return x.pca_z_3d
-                else throw Error('Invalid projection method')
-            }
+
             const xScale = d3
                 .scaleLinear()
                 .domain(d3.extent(data.map((x) => getX(x))) as any)
@@ -65,25 +54,22 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
                 .domain(d3.extent(data.map((x) => getY(x))) as any)
                 .range([0, matrixCellHeight]);
 
-            if (projectionMethod === "tsne" || projectionMethod === "umap" || projectionMethod === "pca") { // 2d case
-                return data.map(d => [+xScale(getX(d)).toFixed(3) + xoffset, +yScale(getY(d)).toFixed(3) + yoffset] as [number, number]);
-            }
+            //if (projectionMethod === "tsne" || projectionMethod === "umap" || projectionMethod === "pca") { // 2d case
+            return data.map(d => [+xScale(getX(d)).toFixed(3) + xoffset, +yScale(getY(d)).toFixed(3) + yoffset] as [number, number]);
+            //}
             // 3d case
-            const zScale = d3
-                .scaleLinear()
-                .domain(d3.extent(data.map((x) => getZ(x))) as any)
-                .range([0, matrixCellHeight]);
-            return data.map(d => [+xScale(getX(d)).toFixed(3) + xoffset,
-            +yScale(getY(d)).toFixed(3) + yoffset,
-            +zScale(getZ(d)).toFixed(3)] as [number, number, number]);
+            //const zScale = d3
+            //    .scaleLinear()
+            //    .domain(d3.extent(data.map((x) => getZ(x))) as any)
+            //    .range([0, matrixCellHeight]);
+            //return data.map(d => [+xScale(getX(d)).toFixed(3) + xoffset,
+            //+yScale(getY(d)).toFixed(3) + yoffset,
+            //+zScale(getZ(d)).toFixed(3)] as [number, number, number]);
         }
         const pointsCoordinates = {
             'tsne': computeCoordinate('tsne'),
             'umap': computeCoordinate('umap'),
-            'pca': computeCoordinate('pca'),
-            'tsne_3d': computeCoordinate('tsne_3d'),
-            'umap_3d': computeCoordinate('umap_3d'),
-            'pca_3d': computeCoordinate('pca_3d')
+            'pca': computeCoordinate('pca')
         }
 
         const image_path = tokenData.map(td => td.imagePath);
@@ -140,15 +126,13 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
                 tsne: pointsCoordinates.tsne[index] as [number, number],
                 umap: pointsCoordinates.umap[index] as [number, number],
                 pca: pointsCoordinates.pca[index] as [number, number],
-                tsne_3d: pointsCoordinates.tsne_3d[index] as [number, number, number],
-                umap_3d: pointsCoordinates.umap_3d[index] as [number, number, number],
-                pca_3d: pointsCoordinates.pca_3d[index] as [number, number, number],
             },
             color: {
                 query_key: colorsByType[index],
                 position: [0, 0, 0],
                 pos_mod_5: [0, 0, 0],
                 special_tokens: [0, 0, 0],
+                region_type: [0, 0, 0],
                 embed_norm: [0, 0, 0],
                 //token_length: [0, 0, 0],
                 sent_length: [0, 0, 0],

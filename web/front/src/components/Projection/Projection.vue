@@ -162,13 +162,12 @@
                         <div>
                             <p class="label">Mode<a-tooltip placement="rightBottom">
                                     <template #title>
-                                        <span>view plots in 2D or 3D</span>
+                                        <span>view plots in 2D</span>
                                     </template>
                                     <font-awesome-icon icon="info" class="info-icon" />
                                 </a-tooltip></p>
                             <a-radio-group v-model:value="dimension">
                                 <a-radio-button value="2D">2D</a-radio-button>
-                                <a-radio-button value="3D">3D</a-radio-button>
                             </a-radio-group>
                             <Transition>
                                 <p class="label italic" v-show="dimension === '3D' && mode === 'matrix'">
@@ -280,8 +279,8 @@ const text_color_info = [
         desc: "token position in sentence modulo 5 (unnormalized)"
     },
     {
-        label: "genomic element type",
-        value: "genomic_element_type",
+        label: "region type",
+        value: "region_type",
         desc: "type of genomic element"
     },    
     {
@@ -311,7 +310,7 @@ const text_color_info = [
     }
 ];
 
-const aggregation_color_info = [
+const image_color_info = [
     {
         label: "query vs. key",
         value: "query_key",
@@ -399,7 +398,7 @@ export default defineComponent({
                 get: () => store.state.aggregationType,
                 set: (v) => store.dispatch("switchAggregation", v)
             }),            
-            modelOptions: ["DNABERT"].map((x) => (
+            modelOptions: ["DNABERT", "DNABERT_agg"].map((x) => (
                 { value: x, label: x }
             )),
             aggregationOptions: ["None","Region"].map((x) => (
