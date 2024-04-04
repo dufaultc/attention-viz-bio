@@ -132,16 +132,16 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
         if (td.type === "query") {
             if (td.region_type == "exon") { colorstr = "#2E93D9" }
             else if (td.region_type == "intron") { colorstr = "#E15759" }
-            else if (td.region_type == "upstream") { colorstr = "#F28E2B" }
-            else if (td.region_type == "downstream") { colorstr = "#59A14F" }
+            else if (td.region_type == "ALU") { colorstr = "#F28E2B" }
+            else if (td.region_type == "MIR") { colorstr = "#59A14F" }
             else if (td.region_type == "cls") { colorstr = "#E3378F" }
             else if (td.region_type == "sep") { colorstr = "#76B7B2" }
             else { colorstr = "#000000" }
         } else {
             if (td.region_type == "exon") { colorstr = "#beddf3" }
             else if (td.region_type == "intron") { colorstr = "#f0a8a9" }
-            else if (td.region_type == "upstream") { colorstr = "#fad9b7" }
-            else if (td.region_type == "downstream") { colorstr = "#bfddbb" }
+            else if (td.region_type == "ALU") { colorstr = "#fad9b7" }
+            else if (td.region_type == "MIR") { colorstr = "#bfddbb" }
             else if (td.region_type == "cls") { colorstr = "#f5bcda" }
             else if (td.region_type == "sep") { colorstr = "#bcdcd9" }
             else { colorstr = "#808080" }
