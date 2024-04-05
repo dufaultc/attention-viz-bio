@@ -17,6 +17,8 @@ export namespace Typing {
     export interface TokenData { // shared by all heads and layers
         position: number;
         pos_int: number;
+        sent_pos: number;
+        num_sent: number;
         region_type: string;
         genomic_element: string;
         length: number;
@@ -38,6 +40,7 @@ export namespace Typing {
         pos_mod_5: number[];
         special_tokens: number[];
         region_type: number[];
+        sent_pos: number[];
         embed_norm: number[];
         //token_length: number[];
         sent_length: number[];
@@ -49,6 +52,7 @@ export namespace Typing {
     }
     export interface PointMsg {
         position: string;
+        region: string;
         categorical: string;
         norm: string;
         length: string;

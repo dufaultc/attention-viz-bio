@@ -340,6 +340,8 @@ export default defineComponent({
                                 return d.color.pos_mod_5
                             case 'region_type':
                                 return d.color.region_type
+                            case 'sent_pos':
+                                return d.color.sent_pos                                
                             case 'embed_norm':
                                 return d.color.embed_norm
                             //case 'token_length':
@@ -736,6 +738,8 @@ export default defineComponent({
                             case 'position':
                             case 'special_tokens':
                             case 'region_type':
+                                return d.msg.region
+                            case 'sent_pos':
                             case 'sent_length':
                             case 'column':
                             case 'row':

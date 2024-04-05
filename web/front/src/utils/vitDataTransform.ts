@@ -144,6 +144,7 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
             },
             msg: {
                 position: pos_msgs[index],
+                region: "",
                 categorical: "",
                 norm: "",
                 length: "",

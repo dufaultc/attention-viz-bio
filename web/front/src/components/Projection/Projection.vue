@@ -284,6 +284,11 @@ const text_color_info = [
         desc: "type of genomic element"
     },    
     {
+        label: "sentence position",
+        value: "sent_pos",
+        desc: "which sentence"
+    },        
+    {
         label: "special tokens",
         value: "special_tokens",
         desc: "special tokens ([cls], [sep]) vs. regular tokens"

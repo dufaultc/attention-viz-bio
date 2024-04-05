@@ -3,20 +3,30 @@
         <div class="legend-box" v-show="!renderState">
             <div id="legend" v-show="colorBy != 'no_outline'">
                 <div class="bar-contain" :class="{
-                        pos: colorBy == 'row' || colorBy == 'column' || colorBy == 'position' || colorBy == 'embed_norm' || colorBy == 'token_length' || colorBy == 'sent_length' || colorBy == 'token_freq', cat: colorBy == 'pos_mod_5', reg: colorBy == 'region_type', pun: colorBy == 'special_tokens'
+                        pos: colorBy == 'row' || colorBy == 'column' || colorBy == 'position' || colorBy == 'embed_norm' || colorBy == 'token_length' || colorBy == 'sent_length' || colorBy == 'token_freq' || colorBy == 'sent_pos', cat: colorBy == 'pos_mod_5', reg: colorBy == 'region_type', pun: colorBy == 'special_tokens'
                     }">
                     <span>query</span>
                     <div class="bar">
                         <span class="low">{{ lowLabel() }}</span>
+                        <span class="second">{{ secondLabel() }}</span>
+                        <span class="third">{{ thirdLabel() }}</span>
+                        <span class="fourth">{{ fourthLabel() }}</span>
+                        <span class="fifth">{{ fifthLabel() }}</span>
+                        <span class="sixth">{{ sixthLabel() }}</span>
                         <span class="high">{{ highLabel() }}</span>
                     </div>
                 </div>
                 <div class="bar-contain k" :class="{
-                    pos: colorBy == 'row' || colorBy == 'column' || colorBy == 'position' || colorBy == 'embed_norm' || colorBy == 'token_length' || colorBy == 'sent_length' || colorBy == 'token_freq', cat: colorBy == 'pos_mod_5', reg: colorBy == 'region_type', pun: colorBy == 'special_tokens'
+                    pos: colorBy == 'row' || colorBy == 'column' || colorBy == 'position' || colorBy == 'embed_norm' || colorBy == 'token_length' || colorBy == 'sent_length' || colorBy == 'token_freq' || colorBy == 'sent_pos', cat: colorBy == 'pos_mod_5', reg: colorBy == 'region_type', pun: colorBy == 'special_tokens'
                 }">
                     <span>key</span>
                     <div class="bar">
                         <span class="low">{{ lowLabel() }}</span>
+                        <span class="second">{{ secondLabel() }}</span>
+                        <span class="third">{{ thirdLabel() }}</span>
+                        <span class="fourth">{{ fourthLabel() }}</span>
+                        <span class="fifth">{{ fifthLabel() }}</span>
+                        <span class="sixth">{{ sixthLabel() }}</span>
                         <span class="high">{{ highLabel() }}</span>
                     </div>
                 </div>
@@ -89,6 +99,50 @@ export default defineComponent({
             }
         }
 
+        const secondLabel = () => {
+            switch (state.colorBy) {
+                case 'region_type':
+                    return "intron"                    
+                default:
+                    ""
+            }
+        }    
+
+        const thirdLabel = () => {
+            switch (state.colorBy) {
+                case 'region_type':
+                    return "ALU"                    
+                default:
+                    ""
+            }
+        }            
+
+        const fourthLabel = () => {
+            switch (state.colorBy) {
+                case 'region_type':
+                    return "MIR"                    
+                default:
+                    ""
+            }
+        }   
+        const fifthLabel = () => {
+            switch (state.colorBy) {
+                case 'region_type':
+                    return "LINE"                    
+                default:
+                    ""
+            }
+        }     
+        const sixthLabel = () => {
+            switch (state.colorBy) {
+                case 'region_type':
+                    return "CLS"                    
+                default:
+                    ""
+            }
+        }                            
+
+
         // change msg below legend
         const setColorMsg = (msg: string) => {
             state.colorMsg = msg;
@@ -101,7 +155,12 @@ export default defineComponent({
         return {
             ...toRefs(state),
             highLabel,
-            lowLabel
+            lowLabel,
+            secondLabel,
+            thirdLabel,
+            fourthLabel,
+            fifthLabel,
+            sixthLabel
         };
     }
 })
@@ -176,22 +235,24 @@ export default defineComponent({
 }
 /* regions type */
 .bar-contain.reg .bar {
-    background: linear-gradient(#2E93D9 17%,
-            #E15759 17% 34%,
-            #F28E2B 34% 51%,
-            #59A14F 51% 68%,
-            #E3378F 68% 84%,
-            #76B7B2 84%);
+    background: linear-gradient(#2E93D9 14%,
+            #E15759 14% 28%,
+            #F28E2B 28% 42%,                       
+            #59A14F 42% 56%,
+            #00ffff 56% 70%, 
+            #E3378F 70% 85%,
+            #76B7B2 85%);
     height: calc(120px + 1vw);
 }
 
 .bar-contain.k.reg .bar {
-    background: linear-gradient(#beddf3 17%,
-            #f0a8a9 17% 34%,
-            #fad9b7 34% 51%,
-            #bfddbb 51% 68%,
-            #f5bcda 68% 84%,
-            #bcdcd9 84%);
+    background: linear-gradient(#beddf3 14%,
+            #f0a8a9 14% 28%,
+            #fad9b7 28% 42%,            
+            #bfddbb 42% 56%,
+            #b3ffff 56% 70%,
+            #f5bcda 70% 85%,
+            #bcdcd9 85%);
 }
 
 /* categorical */
@@ -217,6 +278,23 @@ export default defineComponent({
 
 .bar .high {
     top: 5px;
+}
+
+.bar .second {
+    top: 20px;
+}
+
+.bar .third {
+    top: 40px;
+}
+.bar .fourth {
+    top: 65px;
+}
+.bar .fifth {
+    top: 85px;
+}
+.bar .sixth {
+    top: 105px;
 }
 
 .bar .low {

@@ -66,6 +66,24 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
     };
     const colorsByPosition = tokenData.map((td) => getColor(td));
 
+
+    const queryColorFreq = d3.scaleSequentialSqrt(function (t) {
+        return d3.interpolateHslLong("purple", "orange")(t);
+    }).domain([0, 1]);
+    const keyColorFreq = d3.scaleSequentialSqrt(function (t) {
+        return d3.interpolateHslLong("white", "black")(t);
+    }).domain([0, 1]);
+
+    const queryColorSentPos = d3.scaleSequential(function (t) {
+        return d3.interpolateHslLong("purple", "orange")(t);
+    }).domain([0, 1]);
+    const keyColorSentPos = d3.scaleSequential(function (t) {
+        return d3.interpolateHslLong("white", "black")(t);
+    }).domain([0, 1]);    
+
+
+    
+
     // by length
     const getLengthColor = (td: Typing.TokenData) => {
         var colorstr = "rgb()";
@@ -99,15 +117,30 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
         var colorstr = "rgb()";
         const freq = tokFreq[td.value] - 2;
         if (td.type === "query") {
-            colorstr = queryColor(freq / rangeFreq);
+            colorstr = queryColorFreq(freq / rangeFreq);
         } else if (td.type === "key") {
-            colorstr = keyColor(freq / rangeFreq);
+            colorstr = keyColorFreq(freq / rangeFreq);
         }
         const color = d3.color(colorstr)?.rgb();
         if (!color) return [0, 0, 0];
         return [color.r, color.g, color.b];
     };
     const colorsByFreq = tokenData.map((td) => getFreqColor(td));
+
+    const getSentPosColor = (td: Typing.TokenData) => {
+        var colorstr = "rgb()";
+        if (td.type === "query") {
+            colorstr = queryColorSentPos(td.sent_pos);
+        } else if (td.type === "key") {
+            colorstr = keyColorSentPos(td.sent_pos);
+        }
+        const color = d3.color(colorstr)?.rgb();
+        if (!color) return [0, 0, 0];
+        return [color.r, color.g, color.b];
+    };
+    const colorsBySentPos = tokenData.map((td) => getSentPosColor(td));    
+    
+    
 
     // by categorical position
     const discreteColors = ["#F5C0CA", "#E3378F", "#F0D6A5", "#EDB50E", "#C4D6B8", "#5FB96C", "#C8DDED", "#528DDB", "#D6BAE3", "#A144DB"];
@@ -134,6 +167,7 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
             else if (td.region_type == "intron") { colorstr = "#E15759" }
             else if (td.region_type == "ALU") { colorstr = "#F28E2B" }
             else if (td.region_type == "MIR") { colorstr = "#59A14F" }
+            else if (td.region_type == "LINE") { colorstr = "#00ffff" }
             else if (td.region_type == "cls") { colorstr = "#E3378F" }
             else if (td.region_type == "sep") { colorstr = "#76B7B2" }
             else { colorstr = "#000000" }
@@ -142,6 +176,7 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
             else if (td.region_type == "intron") { colorstr = "#f0a8a9" }
             else if (td.region_type == "ALU") { colorstr = "#fad9b7" }
             else if (td.region_type == "MIR") { colorstr = "#bfddbb" }
+            else if (td.region_type == "LINE") { colorstr = "#b3ffff" }
             else if (td.region_type == "cls") { colorstr = "#f5bcda" }
             else if (td.region_type == "sep") { colorstr = "#bcdcd9" }
             else { colorstr = "#808080" }
@@ -175,6 +210,14 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
     const colorsBySpecialTokens = tokenData.map((td) => getSpecialTokensColor(td));
 
     // compute msgs for each token
+    const reg_msgs = tokenData.map(
+        (td) =>
+            `<b class='${td.type}'>${td.value}</b> (<i>${td.type}</i>, pos: ${td.pos_int} of ${td.length - 1}, region: ${td.region_type})`
+    );
+    const sent_msgs = tokenData.map(
+        (td) =>
+            `<b class='${td.type}'>${td.value}</b> (<i>${td.type}</i>, pos: ${td.pos_int} of ${td.length - 1}, sentence: ${td.sent_pos}of ${td.num_sent})`
+    );
     const pos_msgs = tokenData.map(
         (td) =>
             `<b class='${td.type}'>${td.value}</b> (<i>${td.type}</i>, pos: ${td.pos_int} of ${td.length - 1})`
@@ -311,6 +354,7 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
                 //token_length: colorsByLength[index],
                 sent_length: colorsBySentLength[index],
                 token_freq: colorsByFreq[index],
+                sent_pos: colorsBySentPos[index],
                 row: [0, 0, 0],
                 column: [0, 0, 0],
                 qk_map: [0, 0, 0],
@@ -318,6 +362,7 @@ const computeMatrixProjectionPoint = (matrixData: Typing.MatrixData[], tokenData
             },
             msg: {
                 position: pos_msgs[index],
+                region: reg_msgs[index],
                 categorical: cat_msgs[index],
                 norm: norm_msgs[index],
                 length: length_msgs[index],
