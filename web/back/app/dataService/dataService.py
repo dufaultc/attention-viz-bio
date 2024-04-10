@@ -581,8 +581,11 @@ class DataService(object):
                     attns_vis = plot['tokens'][start:end]
                 break
 
-        attn = normalize_attn([t['attention'] for t in attns])
-        #attn = [t['attention'] for t in attns]
+        if model == "DNABERT_agg":
+            attn = normalize_attn([t['attention'] for t in attns])
+        else:
+            attn = [t['attention'] for t in attns]
+            
         attns_vis = [t['attention'] for t in attns_vis]
         agg_attn = [] if model not in ["bert", "gpt-2", "DNABERT", "DNABERT_agg"] else normalize_attn([t['attention'][:num_tokens]
                                                                              for t in agg_attns])

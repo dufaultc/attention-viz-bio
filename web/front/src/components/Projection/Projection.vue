@@ -133,7 +133,7 @@
                             <font-awesome-icon icon="info" class="info-icon" />
                         </a-tooltip></p>
                     <a-checkbox v-model:checked="sizeByNorm" :class="{
-                        disabled: mode == 'matrix' || aggregationType.includes('Region')
+                        disabled: mode == 'matrix'
                     }">scale by
                         norm</a-checkbox>
 
@@ -284,7 +284,7 @@ const text_color_info = [
         desc: "type of genomic element"
     },    
     {
-        label: "sentence position",
+        label: "sentence",
         value: "sent_pos",
         desc: "which sentence"
     },        

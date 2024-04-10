@@ -270,7 +270,7 @@ export default defineComponent({
             // main scatterplot(s)
             return new ScatterplotLayer({
                 id: "point-layer",
-                pickable: state.mode == 'single' && (state.modelType == "DNABERT" || state.modelType == "DNABERT_agg") && state.aggregationType == "None",
+                pickable: state.mode == 'single' && (state.modelType == "DNABERT" || state.modelType == "DNABERT_agg"),
                 data: points,
                 radiusMaxPixels: 10,
                 stroked: state.mode == 'single',
@@ -367,11 +367,11 @@ export default defineComponent({
                         state.highlightedTokenIndices.includes(d.index)
                             ? d.type == "query"
                                 ? state.userTheme == "light-theme"
-                                    ? highlightColorQuery
-                                    : highlightColorQueryDark
+                                    ? defaultColor //highlightColorQuery
+                                    : defaultColor//highlightColorQueryDark
                                 : state.userTheme == "light-theme"
-                                    ? highlightColorKey
-                                    : highlightColorKeyDark
+                                    ? defaultColor//highlightColorKey
+                                    : defaultColor//highlightColorKeyDark
                             : unactiveColor
                     ) as any;
                 },

@@ -3,7 +3,8 @@
         <div class="legend-box" v-show="!renderState">
             <div id="legend" v-show="colorBy != 'no_outline'">
                 <div class="bar-contain" :class="{
-                        pos: colorBy == 'row' || colorBy == 'column' || colorBy == 'position' || colorBy == 'embed_norm' || colorBy == 'token_length' || colorBy == 'sent_length' || colorBy == 'token_freq' || colorBy == 'sent_pos', cat: colorBy == 'pos_mod_5', reg: colorBy == 'region_type', pun: colorBy == 'special_tokens'
+                        //pos: colorBy == 'row' || colorBy == 'column' || colorBy == 'position' || colorBy == 'embed_norm' || colorBy == 'token_length' || colorBy == 'sent_length' || colorBy == 'token_freq' || colorBy == 'sent_pos', cat: colorBy == 'pos_mod_5', reg: colorBy == 'region_type', pun: colorBy == 'special_tokens'
+                        pos: colorBy == 'row' || colorBy == 'column' || colorBy == 'position' || colorBy == 'embed_norm' || colorBy == 'token_length' || colorBy == 'sent_length' || colorBy == 'token_freq', cat: colorBy == 'pos_mod_5', reg: colorBy == 'region_type', pun: colorBy == 'special_tokens'
                     }">
                     <span>query</span>
                     <div class="bar">
@@ -17,7 +18,8 @@
                     </div>
                 </div>
                 <div class="bar-contain k" :class="{
-                    pos: colorBy == 'row' || colorBy == 'column' || colorBy == 'position' || colorBy == 'embed_norm' || colorBy == 'token_length' || colorBy == 'sent_length' || colorBy == 'token_freq' || colorBy == 'sent_pos', cat: colorBy == 'pos_mod_5', reg: colorBy == 'region_type', pun: colorBy == 'special_tokens'
+                    //pos: colorBy == 'row' || colorBy == 'column' || colorBy == 'position' || colorBy == 'embed_norm' || colorBy == 'token_length' || colorBy == 'sent_length' || colorBy == 'token_freq' || colorBy == 'sent_pos', cat: colorBy == 'pos_mod_5', reg: colorBy == 'region_type', pun: colorBy == 'special_tokens'
+                    pos: colorBy == 'row' || colorBy == 'column' || colorBy == 'position' || colorBy == 'embed_norm' || colorBy == 'token_length' || colorBy == 'sent_length' || colorBy == 'token_freq', cat: colorBy == 'pos_mod_5', reg: colorBy == 'region_type', pun: colorBy == 'special_tokens'
                 }">
                     <span>key</span>
                     <div class="bar">

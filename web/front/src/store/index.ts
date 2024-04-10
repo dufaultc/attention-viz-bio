@@ -4,6 +4,7 @@ import * as dataService from "@/services/dataService";
 
 // init default 
 import { Typing } from "@/utils/typing";
+import { StarTwoTone } from '@ant-design/icons-vue';
 
 // Vuex docs: https://vuex.vuejs.org/
 
@@ -166,6 +167,12 @@ export const store = createStore<State>({
     },
     setAggregationType(state, aggregationType) {
       state.aggregationType = aggregationType
+      if (state.aggregationType == "Region"){
+        state.modelType = "DNABERT_agg"
+      } 
+      if (state.aggregationType == "None"){
+        state.modelType = "DNABERT"
+      } 
       console.log('setAggregationType', aggregationType);
     },
     setProjectionMethod(state, projectionMethod) {
