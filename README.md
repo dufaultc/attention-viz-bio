@@ -1,3 +1,15 @@
+#  GenomeAttenionViz
+
+GenomeAttenionViz is a tool for visualizing attention patterns in DNA LLMs, built by modifying the existing AttentionViz tool.
+
+To use GenomeAttentionViz, follow the below AttentionViz with the following changes
+* Instead of cloning the AttentionViz repo, clone this repo.
+* Instead of downloading the data folder they indicate, run the `running.ipynb` notebook in this repo [https://github.com/dufaultc/DNABERT](https://github.com/dufaultc/DNABERT) to generate data from DNABERT.
+
+
+
+
+
 <img src="https://github.com/catherinesyeh/attention-viz/blob/main/img/matrix.gif" width="33%" height="auto"><img src="https://github.com/catherinesyeh/attention-viz/blob/main/img/single.gif" width="33%" height="auto"><img src="https://github.com/catherinesyeh/attention-viz/blob/main/img/sent_img.gif" width="33%" height="auto">
 
 # attention-viz
