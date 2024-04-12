@@ -251,7 +251,7 @@ export default defineComponent({
                         return 14;
                     }                    
                     return state.mode === "single" && state.sizeByNorm
-                        ? (0.15 + d.normScaled * 0.5) * 3
+                        ? (0.15 + d.normScaled * 0.5) * 1
                         : 4
                 },
                 getFillColor: [255, 195, 0, 255],
@@ -291,11 +291,11 @@ export default defineComponent({
                             highlightedSize = defaultSize * 2;
                         }
                     } else {
-                        defaultSize = 0.4,
-                        highlightedSize = 2;
+                        defaultSize = 0.6,
+                        highlightedSize = 1.3;
 
                         if (state.mode === "matrix") {
-                            highlightedSize = 4;
+                            highlightedSize = 1;
                         }
 
                         if (state.mode === "single" && state.sizeByNorm) {
@@ -361,7 +361,7 @@ export default defineComponent({
                         highlightColorQueryDark = [157, 216, 135, 175],
                         highlightColorKey = [193, 91, 125, 175],
                         highlightColorKeyDark = [234, 138, 170, 175],
-                        unactiveColor = [...getColor(d), 25];
+                        unactiveColor = [...getColor(d), 50];
                     if (state.view != 'search' && !state.highlightedTokenIndices.length) return defaultColor;
                     return (
                         state.highlightedTokenIndices.includes(d.index)
